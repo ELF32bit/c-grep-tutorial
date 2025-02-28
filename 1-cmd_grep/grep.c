@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
 	// getopt from unistd.h is commonly used to parse input options
 	// option (:e) can be followed by an additional argument (optarg)
 	char c;
-	while ((c = getopt (argc, argv, "hiw")) != -1) {
+	while ((c = getopt (argc, argv, "hi")) != -1) {
 		switch (c) {
 			case 'i':
 				options.ignore_case = 1;
