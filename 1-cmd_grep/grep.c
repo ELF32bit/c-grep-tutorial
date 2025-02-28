@@ -42,14 +42,14 @@ int grep(struct Options options) {
 	while ((c = fgetc(file)) != EOF) {
 		int cc = options.ignore_case ? toupper(c) : c;
 
-		if (match_index == search_string_length - 1) {
+		if (match_index > 0 && match_index + 1 == search_string_length) {
 			match_index = 0;
 			printf(ANSI_COLOR_RED);
 			printf("%s", buffer_string);
 			printf(ANSI_COLOR_RESET);
 		}
-		else if (cc == search_string[match_index]) {
-			buffer_string[match_index] = c;
+		else if ((char)cc == search_string[match_index]) {
+			buffer_string[match_index] = (char)c;
 			match_index += 1;
 		}
 		else {
