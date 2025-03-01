@@ -80,6 +80,9 @@ int grep(struct Options options) {
 		}
 	}
 
+	// matching leftovers at the end of file are not handled for simplicity
+	// does not seem necessary for simple text files
+
 	return EXIT_SUCCESS;
 }
 
