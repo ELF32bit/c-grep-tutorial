@@ -3,14 +3,15 @@
 #include <unistd.h> // for getopt() argument parsing
 #include <string.h> // for manipulating C strings
 #include <ctype.h> // for toupper() and isalpha()
+typedef int bool; // for easier reading
 
 // terminal colors
 #define ANSI_COLOR_RED "\x1b[31m"
 #define ANSI_COLOR_RESET "\x1b[0m"
 
 struct Options {
-	int ignore_case;
-	int match_whole_words;
+	bool ignore_case;
+	bool match_whole_words;
 	char* search_string;
 	char* file_name;
 };
@@ -38,8 +39,8 @@ int grep(struct Options options) {
 	char* matching_substring = strdup(options.search_string);
 	size_t match_index = 0;
 	// variables for checking alphabetic whole word matches
-	int is_before_match_alphabetic = 0;
-	int is_search_string_end_alphabetic = 0;
+	bool is_before_match_alphabetic = 0;
+	bool is_search_string_end_alphabetic = 0;
 	if (search_string_length > 0) {
 		is_search_string_end_alphabetic = isalpha(search_string[search_string_length - 1]);
 	}
@@ -49,10 +50,10 @@ int grep(struct Options options) {
 	do {
 		c = fgetc(file); // fgetc() returns int instead of char
 		int c_toupper = options.ignore_case ? toupper(c) : c;
-		int c_is_alphabetic = isalpha(c);
+		bool c_is_alphabetic = isalpha(c);
 
 		if (match_index == search_string_length) {
-			int is_matching = 1;
+			bool is_matching = 1;
 			if (options.match_whole_words) {
 				if (is_before_match_alphabetic || c_is_alphabetic) {
 					is_matching = 0;
