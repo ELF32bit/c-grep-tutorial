@@ -1,2 +1,2 @@
 1) Basic grep implementation like it's 1990.
-	* C strings are not capable of storing UTF-8 encoded text.
+  * C strings are not capable of storing UTF-8 encoded text.
