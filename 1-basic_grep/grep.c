@@ -108,7 +108,7 @@ int main(int argc, char **argv) {
 	}
 
 	//2. 'optind' is a global variable from unistd.h
-	// getopt() sorts 'argv', so non-option arguments follow input options
+	// getopt() sorts 'argv', so non-option arguments follow option arguments
 	if (optind + 1 < argc) {
 		options.search_string = argv[optind + 0];
 		options.file_name = argv[optind + 1];
