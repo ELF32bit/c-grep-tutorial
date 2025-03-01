@@ -23,18 +23,18 @@ int grep(struct Options options) {
 		return EXIT_FAILURE;
 	}
 
-	//2. size_t stores max array size on x64 or x86 system
-	size_t index = 0;
+	//2. preparing variables
+	size_t index = 0; // size_t stores max array size on x64 or x86 system
 	size_t search_string_length = strlen(options.search_string);
 	char* search_string = options.search_string;
-	// duplicating search string as uppercase if necessary
+	// duplicating search string uppercased if necessary
 	if (options.ignore_case) {
 		search_string = strdup(options.search_string);
 		for (index = 0; index < search_string_length; index++) {
 			search_string[index] = toupper(search_string[index]);
 		}
 	}
-	// storing matching substring of the same size as the search string
+	// creating matching substring of the same size as the search string
 	char* matching_substring = strdup(options.search_string);
 	size_t match_index = 0;
 	// variables for checking alphabetic whole word matches
