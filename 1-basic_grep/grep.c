@@ -77,8 +77,7 @@ int grep(struct Options options) {
 			is_before_match_alphabetic = c_is_alphabetic;
 			match_index = 0;
 		}
-	}
-	while (c != EOF);
+	} while (c != EOF);
 
 	return EXIT_SUCCESS;
 }
