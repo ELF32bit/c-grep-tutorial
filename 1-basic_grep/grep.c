@@ -80,6 +80,11 @@ int grep(struct Options options) {
 		}
 	}
 
+	// 4. printing matching leftovers at the end of file
+	for (index = 0; index < match_index; index++) {
+		printf("%c", matching_substring[index]);
+	}
+
 	return EXIT_SUCCESS;
 }
 
