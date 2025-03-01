@@ -16,7 +16,7 @@ struct Options {
 };
 
 int grep(struct Options options) {
-	// 1. Trying to open input file for reading
+	// 1. trying to open input file for reading
 	FILE *file = fopen(options.file_name, "r");
 	if (file == NULL) {
 		printf("Error: No such file.\n");
@@ -24,64 +24,60 @@ int grep(struct Options options) {
 	}
 
 	//2. size_t stores max array size on x64 or x86 system
+	size_t index = 0;
 	size_t search_string_length = strlen(options.search_string);
 	char* search_string = options.search_string;
-	size_t index = 0;
-
-	// duplicating search string as uppercase
+	// duplicating search string as uppercase if necessary
 	if (options.ignore_case) {
 		search_string = strdup(options.search_string);
 		for (index = 0; index < search_string_length; index++) {
 			search_string[index] = toupper(search_string[index]);
 		}
 	}
-
-	// variables for checking whole word matches
-	int is_prefix_alphabetic = 0;
-	int is_ending_alphabetic = 0;
-	if (search_string_length > 0) {
-		is_ending_alphabetic = isalpha(search_string[search_string_length - 1]);
-	}
-
 	// storing matching substring of the same size as the search string
 	char* matching_substring = strdup(options.search_string);
 	size_t match_index = 0;
+	// variables for checking alphabetic whole word matches
+	int is_before_alpha = 0;
+	int is_ending_alpha = 0;
+	if (search_string_length > 0) {
+		is_ending_alpha = isalpha(search_string[search_string_length - 1]);
+	}
 
-	//3. fgetc(), toupper() returns int instead of char
+	//3. consuming input file character by character
 	int c;
-	while ((c = fgetc(file)) != EOF) {
+	do {
+		c = fgetc(file); // fgetc() returns int instead of char
 		int c_toupper = options.ignore_case ? toupper(c) : c;
-		int c_is_alphabetic = isalpha(c);
+		int c_is_alpha = isalpha(c);
 
 		if (match_index == search_string_length) {
 			int is_matching = 1;
 			if (options.match_whole_words) {
-				if (is_prefix_alphabetic || c_is_alphabetic) {
+				if (is_before_alpha || c_is_alpha) {
 					is_matching = 0;
 				}
 			}
 			if (is_matching) { printf(ANSI_COLOR_RED); }
 			printf("%s", matching_substring);
 			if (is_matching) { printf(ANSI_COLOR_RESET); }
-			is_prefix_alphabetic = is_ending_alphabetic;
+			is_before_alpha = is_ending_alpha;
 			match_index = 0;
 		}
 
-		if ((char)c_toupper == search_string[match_index]) {
+		if (((char)c_toupper == search_string[match_index]) && (c != EOF)) {
 			matching_substring[match_index] = (char)c;
 			match_index += 1;
 		} else {
 			for (index = 0; index < match_index; index++) {
 				printf("%c", matching_substring[index]);
 			}
-			printf("%c", c);
-			is_prefix_alphabetic = c_is_alphabetic;
+			if (c != EOF) { printf("%c", c); }
+			is_before_alpha = c_is_alpha;
 			match_index = 0;
 		}
 	}
-
-	// matching leftovers at the end of file are not handled for simplicity
-	// does not seem necessary for simple text files that end with \n
+	while (c != EOF);
 
 	return EXIT_SUCCESS;
 }
@@ -117,7 +113,7 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 
-	//3. Printing options.
+	//3. printing options.
 	printf("Searching in: %s\n", options.file_name);
 	printf("Searching for: %s\n", options.search_string);
 	printf("Searching ignore case: %s\n", options.ignore_case ? "TRUE" : "FALSE");
