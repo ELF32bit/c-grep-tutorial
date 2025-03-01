@@ -49,12 +49,12 @@ int grep(struct Options options) {
 	do {
 		c = fgetc(file); // fgetc() returns int instead of char
 		int c_toupper = options.ignore_case ? toupper(c) : c;
-		int c_is_alpha = isalpha(c);
+		int c_is_alphabetic = isalpha(c);
 
 		if (match_index == search_string_length) {
 			int is_matching = 1;
 			if (options.match_whole_words) {
-				if (is_before_match_alphabetic || c_is_alpha) {
+				if (is_before_match_alphabetic || c_is_alphabetic) {
 					is_matching = 0;
 				}
 			}
@@ -73,7 +73,7 @@ int grep(struct Options options) {
 				printf("%c", matching_substring[index]);
 			}
 			if (c != EOF) { printf("%c", c); }
-			is_before_match_alphabetic = c_is_alpha;
+			is_before_match_alphabetic = c_is_alphabetic;
 			match_index = 0;
 		}
 	}
