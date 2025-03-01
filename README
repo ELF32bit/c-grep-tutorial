@@ -2,3 +2,5 @@
 * C strings are not designed for UTF-8 encoded text 😃️.
 
 2) More advanced grep implementation with UTF-8 character handling.
+
+3) Even more advanced grep implementation with multithreading.
