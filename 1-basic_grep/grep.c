@@ -38,10 +38,10 @@ int grep(struct Options options) {
 	char* matching_substring = strdup(options.search_string);
 	size_t match_index = 0;
 	// variables for checking alphabetic whole word matches
-	int is_before_alpha = 0;
-	int is_ending_alpha = 0;
+	int is_before_match_alphabetic = 0;
+	int is_search_string_end_alphabetic = 0;
 	if (search_string_length > 0) {
-		is_ending_alpha = isalpha(search_string[search_string_length - 1]);
+		is_search_string_end_alphabetic = isalpha(search_string[search_string_length - 1]);
 	}
 
 	//3. consuming input file character by character
@@ -54,14 +54,14 @@ int grep(struct Options options) {
 		if (match_index == search_string_length) {
 			int is_matching = 1;
 			if (options.match_whole_words) {
-				if (is_before_alpha || c_is_alpha) {
+				if (is_before_match_alphabetic || c_is_alpha) {
 					is_matching = 0;
 				}
 			}
 			if (is_matching) { printf(ANSI_COLOR_RED); }
 			printf("%s", matching_substring);
 			if (is_matching) { printf(ANSI_COLOR_RESET); }
-			is_before_alpha = is_ending_alpha;
+			is_before_match_alphabetic = is_search_string_end_alphabetic;
 			match_index = 0;
 		}
 
@@ -73,7 +73,7 @@ int grep(struct Options options) {
 				printf("%c", matching_substring[index]);
 			}
 			if (c != EOF) { printf("%c", c); }
-			is_before_alpha = c_is_alpha;
+			is_before_match_alphabetic = c_is_alpha;
 			match_index = 0;
 		}
 	}
@@ -84,6 +84,10 @@ int grep(struct Options options) {
 
 int main(int argc, char **argv) {
 	struct Options options;
+	options.ignore_case = 0;
+	options.match_whole_words = 0;
+	options.search_string = NULL;
+	options.file_name = NULL;
 
 	//1. getopt() is commonly used for basic input options parsing
 	char c;
