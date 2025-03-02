@@ -18,7 +18,13 @@
 	free(previous_string);\
 }
 
-char* grep_line(const char* line, const struct GrepOptions* options) {
+void grep_result_free(GrepResult* grep_result) {
+	if (grep_result->colored_string != NULL) { free(grep_result->colored_string); }
+	if (grep_result != NULL) { free(grep_result); }
+	grep_result = NULL;
+}
+
+GrepResult* grep_line(const char* line, const GrepOptions* options) {
 	//1. preparing variables
 	// size_t stores max array size on x64 or x86 system
 	size_t search_string_length = strlen(options->search_string);
@@ -50,6 +56,7 @@ char* grep_line(const char* line, const struct GrepOptions* options) {
 	// asprintf() macro is used to dynamically extend colored line
 	char* colored_line = strdup(""); // so free() works
 	bool is_colored_line = 0;
+	size_t match_count = 0;
 	size_t line_index = 0;
 
 	do {
@@ -62,13 +69,12 @@ char* grep_line(const char* line, const struct GrepOptions* options) {
 			bool is_matching = !(is_before_alpha && is_prefix_alpha);
 			is_matching = is_matching && !(is_suffix_alpha && c_is_alpha);
 			is_matching = options->match_whole_words ? is_matching : 1;
+			if (is_matching) { is_colored_line = 1; match_count++; }
 
-			if (is_matching) {
-				is_colored_line = 1;
-				M_ASPRINTF(colored_line, "%s%s", colored_line, ANSI_COLOR_RED);
-			}
+			if (is_matching) { M_ASPRINTF(colored_line, "%s%s", colored_line, ANSI_COLOR_RED); }
 			M_ASPRINTF(colored_line, "%s%s", colored_line, matching_substring);
 			if (is_matching) { M_ASPRINTF(colored_line, "%s%s", colored_line, ANSI_COLOR_RESET); }
+
 			is_before_alpha = is_suffix_alpha;
 			match_index = 0;
 		}
@@ -82,9 +88,11 @@ char* grep_line(const char* line, const struct GrepOptions* options) {
 				M_ASPRINTF(colored_line, "%s%c", colored_line, matching_substring[index]);
 			}
 			if (c != '\0') { M_ASPRINTF(colored_line, "%s%c", colored_line, c); }
+
 			is_before_alpha = c_is_alpha;
 			match_index = 0;
 		}
+
 		line_index++;
 	} while (line[line_index] != '\0');
 
@@ -98,10 +106,13 @@ char* grep_line(const char* line, const struct GrepOptions* options) {
 	if (options->ignore_case) { free(search_string); }
 	free(matching_substring);
 
-	return colored_line;
+	GrepResult* result = malloc(sizeof(GrepResult));
+	result->colored_string = colored_line;
+	result->match_count = match_count;
+	return result;
 }
 
-int grep_file(const char* file_name, const struct GrepOptions* options) {
+int grep_file(const char* file_name, const GrepOptions* options) {
 	// 1. trying to open input file for reading
 	FILE *file = fopen(file_name, "r");
 	if (file == NULL) {
@@ -117,11 +128,11 @@ int grep_file(const char* file_name, const struct GrepOptions* options) {
 
 	while ((line_length = getline(&line, &line_size, file)) != -1) {
 		line_number += 1;
-		char* colored_line = grep_line(line, options);
-		if (colored_line != NULL) {
-			printf("[%s] %zu: %s", file_name, line_number, colored_line);
-			free(colored_line);
+		GrepResult* line_grep_result = grep_line(line, options);
+		if (line_grep_result->colored_string != NULL) {
+			printf("%zu: %s", line_number, line_grep_result->colored_string);
 		}
+		grep_result_free(line_grep_result);
 	}
 	if (line != NULL) { free(line); }
 
@@ -131,7 +142,7 @@ int grep_file(const char* file_name, const struct GrepOptions* options) {
 // this structure is not declared in the header file, it's local to this file
 struct GrepFileArguments {
 	char* file_name;
-	const struct GrepOptions* options;
+	const GrepOptions* options;
 };
 
 // this function is not declared in the header file, it's local to this file
@@ -142,7 +153,7 @@ void *pthread_grep_file(void* arguments) {
 	return NULL;
 }
 
-int grep_files(char** file_names, int file_names_length, const struct GrepOptions* options) {
+int grep_files(char** file_names, int file_names_length, const GrepOptions* options) {
 	pthread_t thread1, thread2; // using 2 threads for simplicity
 
 	// creating threads mutex

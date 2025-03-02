@@ -16,7 +16,7 @@
 	free(previous_string);\
 }
 
-char* grep_line(const char* line, const struct GrepOptions* options) {
+char* grep_line(const char* line, const GrepOptions* options) {
 	//1. preparing variables
 	// size_t stores max array size on x64 or x86 system
 	size_t search_string_length = strlen(options->search_string);
@@ -60,13 +60,12 @@ char* grep_line(const char* line, const struct GrepOptions* options) {
 			bool is_matching = !(is_before_alpha && is_prefix_alpha);
 			is_matching = is_matching && !(is_suffix_alpha && c_is_alpha);
 			is_matching = options->match_whole_words ? is_matching : 1;
+			if (is_matching) { is_colored_line = 1; }
 
-			if (is_matching) {
-				is_colored_line = 1;
-				M_ASPRINTF(colored_line, "%s%s", colored_line, ANSI_COLOR_RED);
-			}
+			if (is_matching) { M_ASPRINTF(colored_line, "%s%s", colored_line, ANSI_COLOR_RED); }
 			M_ASPRINTF(colored_line, "%s%s", colored_line, matching_substring);
 			if (is_matching) { M_ASPRINTF(colored_line, "%s%s", colored_line, ANSI_COLOR_RESET); }
+
 			is_before_alpha = is_suffix_alpha;
 			match_index = 0;
 		}
@@ -80,9 +79,11 @@ char* grep_line(const char* line, const struct GrepOptions* options) {
 				M_ASPRINTF(colored_line, "%s%c", colored_line, matching_substring[index]);
 			}
 			if (c != '\0') { M_ASPRINTF(colored_line, "%s%c", colored_line, c); }
+
 			is_before_alpha = c_is_alpha;
 			match_index = 0;
 		}
+
 		line_index++;
 	} while (line[line_index] != '\0');
 
@@ -99,7 +100,7 @@ char* grep_line(const char* line, const struct GrepOptions* options) {
 	return colored_line;
 }
 
-int grep_file(const char* file_name, const struct GrepOptions* options) {
+int grep_file(const char* file_name, const GrepOptions* options) {
 	// 1. trying to open input file for reading
 	FILE *file = fopen(file_name, "r");
 	if (file == NULL) {

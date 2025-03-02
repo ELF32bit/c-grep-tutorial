@@ -3,11 +3,12 @@
 #include <unistd.h> // getopt()
 #include <string.h> // strlen(), strdup()
 #include <ctype.h> // toupper(), isalpha()
-typedef int bool; // for easier reading
 
 // terminal colors
 #define ANSI_COLOR_RED "\x1b[31m"
 #define ANSI_COLOR_RESET "\x1b[0m"
+
+typedef int bool;
 
 struct Options {
 	bool ignore_case;
@@ -67,6 +68,7 @@ int grep(const struct Options* options) {
 			if (is_matching) { printf(ANSI_COLOR_RED); }
 			printf("%s", matching_substring);
 			if (is_matching) { printf(ANSI_COLOR_RESET); }
+
 			is_before_alpha = is_suffix_alpha;
 			match_index = 0;
 		}
@@ -80,6 +82,7 @@ int grep(const struct Options* options) {
 				printf("%c", matching_substring[index]);
 			}
 			if (c != EOF) { printf("%c", c); }
+
 			is_before_alpha = c_is_alpha;
 			match_index = 0;
 		}
