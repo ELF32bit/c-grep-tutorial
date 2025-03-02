@@ -9,11 +9,11 @@
 #define ANSI_COLOR_RED "\x1b[31m"
 #define ANSI_COLOR_RESET "\x1b[0m"
 
-// asprintf() macro for extending string without memory leaks
-#define M_ASPRINTF(write_to,  ...) {\
-	char* _tmp_string_ = write_to;\
-	asprintf(&(write_to), __VA_ARGS__);\
-	free(_tmp_string_);\
+// asprintf() macro for repeated usage without memory leaks
+#define M_ASPRINTF(string,  ...) {\
+	char* tmp_string = string;\
+	asprintf(&(string), __VA_ARGS__);\
+	free(tmp_string);\
 }
 
 char* grep_line(char* line, struct GrepOptions options) {
