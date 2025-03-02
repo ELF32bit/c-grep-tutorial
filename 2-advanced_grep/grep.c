@@ -1,9 +1,9 @@
 #include "grep.h"
 
-#include <stdlib.h> // for EXIT_SUCCESS, EXIT_FAILURE syntax
-#include <stdio.h> // for asprintf(), fopen() and getline()
-#include <string.h> // for manipulating C strings
-#include <ctype.h> // for toupper() and isalpha()
+#include <stdlib.h> // EXIT_SUCCESS, EXIT_FAILURE
+#include <stdio.h> // asprintf(), fopen(), getline()
+#include <string.h> // strlen(), strdup()
+#include <ctype.h> // toupper(), isalpha()
 
 // terminal colors
 #define ANSI_COLOR_RED "\x1b[31m"
@@ -18,7 +18,7 @@ char* grep_line(char* line, struct GrepOptions options) {
 	if (matching_substring == NULL) { return NULL; }
 	size_t match_index = 0;
 
-	// duplicating search string uppercased if necessary
+	// duplicating search string as upper case if necessary
 	char* search_string = options.search_string;
 	if (options.ignore_case) {
 		search_string = strdup(options.search_string);
@@ -80,15 +80,16 @@ char* grep_line(char* line, struct GrepOptions options) {
 		line_index++;
 	} while (line[line_index] != '\0');
 
-	//4. freeing memory used by duplicated strings
-	if (options.ignore_case) { free(search_string); }
-	free(matching_substring);
-
-	//5. freeing colored line if no matches were found
+	// freeing colored line if no matches were found
 	if (!is_colored_line) {
 		free(colored_line);
 		colored_line = NULL;
 	}
+
+	//4. freeing memory used by duplicated strings
+	if (options.ignore_case) { free(search_string); }
+	free(matching_substring);
+
 	return colored_line;
 }
 

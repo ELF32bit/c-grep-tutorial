@@ -1,8 +1,8 @@
-#include <stdlib.h> // for EXIT_SUCCESS, EXIT_FAILURE syntax
-#include <stdio.h> // for printf() and fopen()
-#include <unistd.h> // for getopt() argument parsing
-#include <string.h> // for manipulating C strings
-#include <ctype.h> // for toupper() and isalpha()
+#include <stdlib.h> // EXIT_SUCCESS, EXIT_FAILURE
+#include <stdio.h> // printf(), fopen()
+#include <unistd.h> // getopt()
+#include <string.h> // strlen(), strdup()
+#include <ctype.h> // toupper(), isalpha()
 typedef int bool; // for easier reading
 
 // terminal colors
@@ -32,7 +32,7 @@ int grep(struct Options options) {
 	if (matching_substring == NULL) { return EXIT_FAILURE; }
 	size_t match_index = 0;
 
-	// duplicating search string uppercased if necessary
+	// duplicating search string as upper case if necessary
 	char* search_string = options.search_string;
 	if (options.ignore_case) {
 		search_string = strdup(options.search_string);

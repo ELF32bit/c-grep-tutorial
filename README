@@ -4,5 +4,6 @@
 
 2) More advanced grep implementation that prints individual lines.
 * C headers are introduced to structure the program.
+* asprintf() function is introduced for printing.
 
 3) Even more advanced grep implementation with multithreading.

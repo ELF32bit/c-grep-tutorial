@@ -1,5 +1,5 @@
 #include <stdlib.h> // for EXIT_SUCCESS, EXIT_FAILURE syntax
-#include <stdio.h> // for printf(), fopen() and getline()
+#include <stdio.h> // for printf()
 #include <unistd.h> // for getopt() argument parsing
 
 #include "grep.h"
