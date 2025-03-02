@@ -9,6 +9,13 @@
 #define ANSI_COLOR_RED "\x1b[31m"
 #define ANSI_COLOR_RESET "\x1b[0m"
 
+// asprintf() macro for extending string without memory leaks
+#define M_ASPRINTF(write_to,  ...) {\
+	char* _tmp_string_ = write_to;\
+	asprintf(&(write_to), __VA_ARGS__);\
+	free(_tmp_string_);\
+}
+
 char* grep_line(char* line, struct GrepOptions options) {
 	//1. preparing variables
 	// size_t stores max array size on x64 or x86 system
@@ -37,8 +44,8 @@ char* grep_line(char* line, struct GrepOptions options) {
 	}
 
 	//2. consuming line character by character until '\0' terminator
-	// asprintf() is first used here to create the colored line
-	char* colored_line = "";
+	// asprintf() macro is used to dynamically extend colored line
+	char* colored_line = strdup(""); // so free() works
 	bool is_colored_line = 0;
 	size_t line_index = 0;
 
@@ -57,10 +64,10 @@ char* grep_line(char* line, struct GrepOptions options) {
 			}
 			if (is_matching) {
 				is_colored_line = 1;
-				asprintf(&colored_line, "%s%s", colored_line, ANSI_COLOR_RED);
+				M_ASPRINTF(colored_line, "%s%s", colored_line, ANSI_COLOR_RED);
 			}
-			asprintf(&colored_line, "%s%s", colored_line, matching_substring);
-			if (is_matching) { asprintf(&colored_line, "%s%s", colored_line, ANSI_COLOR_RESET); }
+			M_ASPRINTF(colored_line, "%s%s", colored_line, matching_substring);
+			if (is_matching) { M_ASPRINTF(colored_line, "%s%s", colored_line, ANSI_COLOR_RESET); }
 			is_before_match_alphabetic = is_search_string_end_alphabetic;
 			match_index = 0;
 		}
@@ -71,9 +78,9 @@ char* grep_line(char* line, struct GrepOptions options) {
 			match_index += 1;
 		} else {
 			for (size_t index = 0; index < match_index; index++) {
-				asprintf(&colored_line, "%s%c", colored_line, matching_substring[index]);
+				M_ASPRINTF(colored_line, "%s%c", colored_line, matching_substring[index]);
 			}
-			if (c != '\0') { asprintf(&colored_line, "%s%c", colored_line, c); }
+			if (c != '\0') { M_ASPRINTF(colored_line, "%s%c", colored_line, c); }
 			is_before_match_alphabetic = c_is_alphabetic;
 			match_index = 0;
 		}
