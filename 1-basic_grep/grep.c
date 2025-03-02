@@ -43,11 +43,12 @@ int grep(const struct Options* options) {
 	}
 
 	// variables for checking alphabetic whole word matches
-	bool is_before_match_alphabetic = 0;
-	bool is_search_string_end_alphabetic = 0;
+	bool is_before_alpha = 0;
+	bool is_prefix_alpha = 0;
+	bool is_suffix_alpha = 0;
 	if (search_string_length > 0) {
-		char search_string_end = search_string[search_string_length - 1];
-		is_search_string_end_alphabetic = isalpha(search_string_end);
+		is_prefix_alpha = isalpha(search_string[0]);
+		is_suffix_alpha = isalpha(search_string[search_string_length - 1]);
 	}
 
 	//3. consuming file character by character until 'EOF'
@@ -55,20 +56,18 @@ int grep(const struct Options* options) {
 	do {
 		c = fgetc(file); // fgetc() returns int instead of char
 		int c_toupper = options->ignore_case ? toupper(c) : c;
-		bool c_is_alphabetic = isalpha(c);
+		bool c_is_alpha = isalpha(c);
 
 		// processing full matching substring
 		if (match_index == search_string_length) {
-			bool is_matching = 1;
-			if (options->match_whole_words) {
-				if (is_before_match_alphabetic || c_is_alphabetic) {
-					is_matching = 0;
-				}
-			}
+			bool is_matching = !(is_before_alpha && is_prefix_alpha);
+			is_matching = is_matching && !(is_suffix_alpha && c_is_alpha);
+			is_matching = options->match_whole_words ? is_matching : 1;
+
 			if (is_matching) { printf(ANSI_COLOR_RED); }
 			printf("%s", matching_substring);
 			if (is_matching) { printf(ANSI_COLOR_RESET); }
-			is_before_match_alphabetic = is_search_string_end_alphabetic;
+			is_before_alpha = is_suffix_alpha;
 			match_index = 0;
 		}
 
@@ -81,7 +80,7 @@ int grep(const struct Options* options) {
 				printf("%c", matching_substring[index]);
 			}
 			if (c != EOF) { printf("%c", c); }
-			is_before_match_alphabetic = c_is_alphabetic;
+			is_before_alpha = c_is_alpha;
 			match_index = 0;
 		}
 	} while (c != EOF);
