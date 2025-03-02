@@ -50,7 +50,7 @@ int grep(struct Options options) {
 		is_search_string_end_alphabetic = isalpha(search_string_end);
 	}
 
-	//3. consuming input file character by character
+	//3. consuming file character by character until 'EOF'
 	int c;
 	do {
 		c = fgetc(file); // fgetc() returns int instead of char

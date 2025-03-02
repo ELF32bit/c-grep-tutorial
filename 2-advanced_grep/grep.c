@@ -36,8 +36,8 @@ char* grep_line(char* line, struct GrepOptions options) {
 		is_search_string_end_alphabetic = isalpha(search_string_end);
 	}
 
-	//2. consuming line character by character (asprintf is used here!)
-	// C strings are usually terminated with '/0' character
+	//2. consuming line character by character until '\0' terminator
+	// asprintf() is first used here to create the colored line
 	char* colored_line = "";
 	bool is_colored_line = 0;
 	size_t line_index = 0;
