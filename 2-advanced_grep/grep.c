@@ -11,9 +11,9 @@
 
 // asprintf() macro for repeated usage without memory leaks
 #define M_ASPRINTF(destination_string,  ...) {\
-	char* tmp_string = destination_string;\
+	char* previous_string = destination_string;\
 	asprintf(&(destination_string), __VA_ARGS__);\
-	free(tmp_string);\
+	free(previous_string);\
 }
 
 char* grep_line(char* line, struct GrepOptions options) {
