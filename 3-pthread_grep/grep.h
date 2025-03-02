@@ -12,8 +12,8 @@ struct GrepOptions {
 };
 
 // always prefix functions with header name
-char* grep_line(char* line, struct GrepOptions options);
-int grep_file(char* file_name, struct GrepOptions options);
-int grep_files(char** file_names, int file_names_length, struct GrepOptions options);
+char* grep_line(const char* line, const struct GrepOptions* options);
+int grep_file(const char* file_name, const struct GrepOptions* options);
+int grep_files(char** file_names, int file_names_length, const struct GrepOptions* options);
 
 #endif

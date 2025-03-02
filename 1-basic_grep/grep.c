@@ -16,9 +16,9 @@ struct Options {
 	char* file_name;
 };
 
-int grep(struct Options options) {
+int grep(const struct Options* options) {
 	// 1. trying to open input file for reading
-	FILE* file = fopen(options.file_name, "r");
+	FILE* file = fopen(options->file_name, "r");
 	if (file == NULL) {
 		printf("Error: No such file.\n");
 		return EXIT_FAILURE;
@@ -26,16 +26,16 @@ int grep(struct Options options) {
 
 	//2. preparing variables
 	// size_t stores max array size on x64 or x86 system
-	size_t search_string_length = strlen(options.search_string);
+	size_t search_string_length = strlen(options->search_string);
 	// creating matching substring of the same size as the search string
-	char* matching_substring = strdup(options.search_string);
+	char* matching_substring = strdup(options->search_string);
 	if (matching_substring == NULL) { return EXIT_FAILURE; }
 	size_t match_index = 0;
 
 	// duplicating search string as upper case if necessary
-	char* search_string = options.search_string;
-	if (options.ignore_case) {
-		search_string = strdup(options.search_string);
+	char* search_string = options->search_string;
+	if (options->ignore_case) {
+		search_string = strdup(options->search_string);
 		if (search_string == NULL) { return EXIT_FAILURE; }
 		for (size_t index = 0; index < search_string_length; index++) {
 			search_string[index] = toupper(search_string[index]);
@@ -54,13 +54,13 @@ int grep(struct Options options) {
 	int c;
 	do {
 		c = fgetc(file); // fgetc() returns int instead of char
-		int c_toupper = options.ignore_case ? toupper(c) : c;
+		int c_toupper = options->ignore_case ? toupper(c) : c;
 		bool c_is_alphabetic = isalpha(c);
 
 		// processing full matching substring
 		if (match_index == search_string_length) {
 			bool is_matching = 1;
-			if (options.match_whole_words) {
+			if (options->match_whole_words) {
 				if (is_before_match_alphabetic || c_is_alphabetic) {
 					is_matching = 0;
 				}
@@ -87,7 +87,7 @@ int grep(struct Options options) {
 	} while (c != EOF);
 
 	//4. freeing memory used by duplicated strings
-	if (options.ignore_case) { free(search_string); }
+	if (options->ignore_case) { free(search_string); }
 	free(matching_substring);
 
 	return EXIT_SUCCESS;
@@ -128,11 +128,11 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 
-	//3. printing options.
+	//3. printing options
 	printf("Searching in: %s\n", options.file_name);
 	printf("Searching for: %s\n", options.search_string);
 	printf("Ignoring case: %s\n", options.ignore_case ? "TRUE" : "FALSE");
 	printf("Matching whole words: %s\n", options.match_whole_words ? "TRUE" : "FALSE");
 
-	return grep(options);
+	return grep(&options); // options are passed as read only reference without copy
 }

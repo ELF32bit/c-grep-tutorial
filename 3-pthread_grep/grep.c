@@ -18,19 +18,19 @@
 	free(previous_string);\
 }
 
-char* grep_line(char* line, struct GrepOptions options) {
+char* grep_line(const char* line, const struct GrepOptions* options) {
 	//1. preparing variables
 	// size_t stores max array size on x64 or x86 system
-	size_t search_string_length = strlen(options.search_string);
+	size_t search_string_length = strlen(options->search_string);
 	// creating matching substring of the same size as the search string
-	char* matching_substring = strdup(options.search_string);
+	char* matching_substring = strdup(options->search_string);
 	if (matching_substring == NULL) { return NULL; }
 	size_t match_index = 0;
 
 	// duplicating search string as upper case if necessary
-	char* search_string = options.search_string;
-	if (options.ignore_case) {
-		search_string = strdup(options.search_string);
+	char* search_string = options->search_string;
+	if (options->ignore_case) {
+		search_string = strdup(options->search_string);
 		if (search_string == NULL) { return NULL; }
 		for (size_t index = 0; index < search_string_length; index++) {
 			search_string[index] = toupper(search_string[index]);
@@ -53,13 +53,13 @@ char* grep_line(char* line, struct GrepOptions options) {
 
 	do {
 		char c = line[line_index];
-		char c_toupper = (char)(options.ignore_case ? toupper(c) : c);
+		char c_toupper = (char)(options->ignore_case ? toupper(c) : c);
 		bool c_is_alphabetic = isalpha(c);
 
 		// processing full matching substring
 		if (match_index == search_string_length) {
 			bool is_matching = 1;
-			if (options.match_whole_words) {
+			if (options->match_whole_words) {
 				if (is_before_match_alphabetic || c_is_alphabetic) {
 					is_matching = 0;
 				}
@@ -96,13 +96,13 @@ char* grep_line(char* line, struct GrepOptions options) {
 	}
 
 	//4. freeing memory used by duplicated strings
-	if (options.ignore_case) { free(search_string); }
+	if (options->ignore_case) { free(search_string); }
 	free(matching_substring);
 
 	return colored_line;
 }
 
-int grep_file(char* file_name, struct GrepOptions options) {
+int grep_file(const char* file_name, const struct GrepOptions* options) {
 	// 1. trying to open input file for reading
 	FILE *file = fopen(file_name, "r");
 	if (file == NULL) {
@@ -132,7 +132,7 @@ int grep_file(char* file_name, struct GrepOptions options) {
 // this structure is not declared in the header file, it's local to this file
 struct GrepFileArguments {
 	char* file_name;
-	struct GrepOptions options;
+	const struct GrepOptions* options;
 };
 
 // this function is not declared in the header file, it's local to this file
@@ -143,7 +143,7 @@ void *pthread_grep_file(void* arguments) {
 	return NULL;
 }
 
-int grep_files(char** file_names, int file_names_length, struct GrepOptions options) {
+int grep_files(char** file_names, int file_names_length, const struct GrepOptions* options) {
 	pthread_t thread1, thread2; // using 2 threads for simplicity
 
 	// creating threads mutex

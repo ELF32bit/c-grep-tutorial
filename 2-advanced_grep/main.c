@@ -45,5 +45,5 @@ int main(int argc, char **argv) {
 	printf("Ignoring case: %s\n", options.ignore_case ? "TRUE" : "FALSE");
 	printf("Matching whole words: %s\n", options.match_whole_words ? "TRUE" : "FALSE");
 
-	return grep_file(file_name, options);
+	return grep_file(file_name, &options);
 }
