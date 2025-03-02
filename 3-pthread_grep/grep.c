@@ -19,8 +19,12 @@
 }
 
 void grep_result_free(GrepResult* grep_result) {
-	if (grep_result->colored_string != NULL) { free(grep_result->colored_string); }
-	if (grep_result != NULL) { free(grep_result); }
+	if (grep_result != NULL) {
+		if (grep_result->colored_string != NULL) {
+			free(grep_result->colored_string);
+		}
+		free(grep_result);
+	}
 	grep_result = NULL;
 }
 
@@ -106,19 +110,23 @@ GrepResult* grep_line(const char* line, const GrepOptions* options) {
 	if (options->ignore_case) { free(search_string); }
 	free(matching_substring);
 
-	GrepResult* result = malloc(sizeof(GrepResult));
-	result->colored_string = colored_line;
-	result->match_count = match_count;
-	return result;
+	GrepResult* grep_result = malloc(sizeof(GrepResult));
+	grep_result->colored_string = colored_line;
+	grep_result->match_count = match_count;
+	return grep_result;
 }
 
-int grep_file(const char* file_name, const GrepOptions* options) {
+GrepResult* grep_file(const char* file_name, const GrepOptions* options) {
 	// 1. trying to open input file for reading
 	FILE *file = fopen(file_name, "r");
 	if (file == NULL) {
 		printf("Error: No such file.\n");
-		return EXIT_FAILURE;
+		return NULL;
 	}
+
+	GrepResult* grep_result = malloc(sizeof(GrepResult));
+	grep_result->colored_string = NULL; // not necessary for files
+	grep_result->match_count = 0;
 
 	//2. getline() is a newer and better function defined in stdio.h
 	char* line = NULL;
@@ -130,13 +138,14 @@ int grep_file(const char* file_name, const GrepOptions* options) {
 		line_number += 1;
 		GrepResult* line_grep_result = grep_line(line, options);
 		if (line_grep_result->colored_string != NULL) {
-			printf("%zu: %s", line_number, line_grep_result->colored_string);
+			printf("[%s] %zu: %s", file_name, line_number, line_grep_result->colored_string);
 		}
+		grep_result->match_count += line_grep_result->match_count;
 		grep_result_free(line_grep_result);
 	}
 	if (line != NULL) { free(line); }
 
-	return EXIT_SUCCESS;
+	return grep_result;
 }
 
 // this structure is not declared in the header file, it's local to this file
@@ -149,7 +158,9 @@ struct GrepFileArguments {
 void *pthread_grep_file(void* arguments) {
 	// casting pointer to arguments structure from void* to its proper type
 	struct GrepFileArguments* args = (struct GrepFileArguments*) arguments;
-	grep_file(args->file_name, args->options);
+	GrepResult* grep_result = grep_file(args->file_name, args->options);
+	printf("(%s): %zu\n", args->file_name, grep_result->match_count);
+	grep_result_free(grep_result);
 	return NULL;
 }
 
