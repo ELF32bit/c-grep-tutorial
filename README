@@ -2,6 +2,7 @@
 * strlen(), toupper(), isalpha() are not designed to work with multibyte characters 😃️.
 * UTF-8 is the most common text encoding where each character is 1 to 4 bytes.
 
-2) More advanced grep implementation with UTF-8 character handling.
+2) More advanced grep implementation that prints individual lines.
+* C headers are introduced to structure the program.
 
 3) Even more advanced grep implementation with multithreading.

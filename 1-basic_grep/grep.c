@@ -18,31 +18,36 @@ struct Options {
 
 int grep(struct Options options) {
 	// 1. trying to open input file for reading
-	FILE *file = fopen(options.file_name, "r");
+	FILE* file = fopen(options.file_name, "r");
 	if (file == NULL) {
 		printf("Error: No such file.\n");
 		return EXIT_FAILURE;
 	}
 
 	//2. preparing variables
-	size_t index = 0; // size_t stores max array size on x64 or x86 system
+	// size_t stores max array size on x64 or x86 system
 	size_t search_string_length = strlen(options.search_string);
-	char* search_string = options.search_string;
+	// creating matching substring of the same size as the search string
+	char* matching_substring = strdup(options.search_string);
+	if (matching_substring == NULL) { return EXIT_FAILURE; }
+	size_t match_index = 0;
+
 	// duplicating search string uppercased if necessary
+	char* search_string = options.search_string;
 	if (options.ignore_case) {
 		search_string = strdup(options.search_string);
-		for (index = 0; index < search_string_length; index++) {
+		if (search_string == NULL) { return EXIT_FAILURE; }
+		for (size_t index = 0; index < search_string_length; index++) {
 			search_string[index] = toupper(search_string[index]);
 		}
 	}
-	// creating matching substring of the same size as the search string
-	char* matching_substring = strdup(options.search_string);
-	size_t match_index = 0;
+
 	// variables for checking alphabetic whole word matches
 	bool is_before_match_alphabetic = 0;
 	bool is_search_string_end_alphabetic = 0;
 	if (search_string_length > 0) {
-		is_search_string_end_alphabetic = isalpha(search_string[search_string_length - 1]);
+		char search_string_end = search_string[search_string_length - 1];
+		is_search_string_end_alphabetic = isalpha(search_string_end);
 	}
 
 	//3. consuming input file character by character
@@ -52,6 +57,7 @@ int grep(struct Options options) {
 		int c_toupper = options.ignore_case ? toupper(c) : c;
 		bool c_is_alphabetic = isalpha(c);
 
+		// processing full matching substring
 		if (match_index == search_string_length) {
 			bool is_matching = 1;
 			if (options.match_whole_words) {
@@ -66,11 +72,12 @@ int grep(struct Options options) {
 			match_index = 0;
 		}
 
-		if (((char)c_toupper == search_string[match_index]) && (c != EOF)) {
+		// growing matching substring
+		if ( ((char)c_toupper == search_string[match_index]) && (c != EOF) ) {
 			matching_substring[match_index] = (char)c;
 			match_index += 1;
 		} else {
-			for (index = 0; index < match_index; index++) {
+			for (size_t index = 0; index < match_index; index++) {
 				printf("%c", matching_substring[index]);
 			}
 			if (c != EOF) { printf("%c", c); }
@@ -78,6 +85,10 @@ int grep(struct Options options) {
 			match_index = 0;
 		}
 	} while (c != EOF);
+
+	//4. freeing memory used by duplicated strings
+	if (options.ignore_case) { free(search_string); }
+	free(matching_substring);
 
 	return EXIT_SUCCESS;
 }
@@ -120,8 +131,8 @@ int main(int argc, char **argv) {
 	//3. printing options.
 	printf("Searching in: %s\n", options.file_name);
 	printf("Searching for: %s\n", options.search_string);
-	printf("Searching ignore case: %s\n", options.ignore_case ? "TRUE" : "FALSE");
-	printf("Searching matching only whole words: %s\n", options.match_whole_words ? "TRUE" : "FALSE");
+	printf("Ignoring case: %s\n", options.ignore_case ? "TRUE" : "FALSE");
+	printf("Matching whole words: %s\n", options.match_whole_words ? "TRUE" : "FALSE");
 
 	return grep(options);
 }
