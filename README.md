@@ -17,3 +17,12 @@ And God said, Let there be light: and there was light.<br>
 </table></tr></td>
 
 3) Even more advanced grep implementation with multithreading.
+* Run the program multiple times and observe different output order.
+<table><tr><td>
+[input-1.txt] 1: In <ins>the</ins> beginning God created <ins>the</ins> heaven and <ins>the</ins> earth.<br>
+[input-2.txt] 1: In <ins>the</ins> beginning God created <ins>the</ins> heaven and <ins>the</ins> earth.<br>
+[input-1.txt] 3: And <ins>the</ins> evening and <ins>the</ins> morning were <ins>the</ins> third day.<br>
+[input-1.txt] 5: <ins>the</ins>;<ins>The</ins>;<ins>THE</ins>;TheThe;TheTheThe;th<br>
+[input-2.txt] 3: And <ins>the</ins> evening and <ins>the</ins> morning were <ins>the</ins> third day.<br>
+[input-2.txt] 5: <ins>the</ins>;<ins>The</ins>;<ins>THE</ins>;TheThe;TheTheThe;th
+</table></tr></td>
