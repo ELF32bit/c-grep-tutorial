@@ -20,7 +20,7 @@ typedef struct GrepOptions {
 	bool match_whole_words;
 	char* search_string;
 	int available_threads;
-	bool _quiet;
+	bool _quiet; // hidden internal option
 } GrepOptions;
 
 /* Use typedef for structs to improve readability */
