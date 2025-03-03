@@ -54,6 +54,6 @@ int main(int argc, char **argv) {
 	GrepFilesResult grep_files_result = grep_files(file_names, file_names_length, &options);
 	printf("Matches found: %zu\n", grep_files_result.match_count);
 
-	free(file_names);
+	free(file_names); // freeing input files array
 	return grep_files_result.exit_code;
 }
