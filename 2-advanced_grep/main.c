@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
 	char* file_name = NULL;
 
 	//1. getopt() is commonly used for basic input options parsing
-	char c;
+	int c;
 	while ((c = getopt (argc, argv, "hiw")) != -1) {
 		switch (c) {
 			case 'i':

@@ -9,12 +9,12 @@ int main(int argc, char **argv) {
 	options.ignore_case = 0;
 	options.match_whole_words = 0;
 	options.search_string = NULL;
+
 	int file_names_length = 0;
 	char** file_names = NULL;
 	int threads = 2;
 
-	//1. getopt() is commonly used for basic input options parsing
-	char c;
+	int c;
 	while ((c = getopt (argc, argv, "hiwt:")) != -1) {
 		switch (c) {
 			case 'i':

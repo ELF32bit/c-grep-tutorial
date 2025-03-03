@@ -8,6 +8,7 @@
 #define ANSI_COLOR_RED "\x1b[31m"
 #define ANSI_COLOR_RESET "\x1b[0m"
 
+// use typedef to distinguish variables
 typedef int bool;
 
 struct Options {
@@ -106,7 +107,7 @@ int main(int argc, char **argv) {
 	options.file_name = NULL;
 
 	//1. getopt() is commonly used for basic input options parsing
-	char c;
+	int c;
 	while ((c = getopt (argc, argv, "hiw")) != -1) {
 		switch (c) {
 			case 'i':
