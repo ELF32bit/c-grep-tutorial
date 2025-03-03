@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
 			case 'w':
 				options.match_whole_words = 1;
 				break;
-			case 't':
+			case 't': // requires an argument after -t
 				threads = atoi(optarg);
 				break;
 			case 'h':

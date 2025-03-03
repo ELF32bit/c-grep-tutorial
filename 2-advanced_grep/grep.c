@@ -5,11 +5,12 @@
 #include <string.h> // strlen(), strdup()
 #include <ctype.h> // toupper(), isalpha()
 
-// terminal colors
+/* Terminal color codes */
 #define ANSI_COLOR_RED "\x1b[31m"
 #define ANSI_COLOR_RESET "\x1b[0m"
 
-// asprintf() macro for repeated usage without memory leaks
+/* asprintf() macro for repeated usage without memory leaks */
+/* First use of this macro requires a heap allocated string */
 #define ASPRINTF(destination_string,  ...) {\
 	char* previous_string = destination_string;\
 	asprintf(&(destination_string), __VA_ARGS__);\
@@ -42,8 +43,8 @@ char* grep_line(const char* line, const GrepOptions* options) {
 		is_suffix_alpha = isalpha(search_string[search_string_length - 1]);
 	}
 
-	//1. consuming line character by character until '\0' terminator
-	// asprintf() macro is used to append to the colored line
+	/* C strings usually end with '\0' terminator */
+	/* Consuming line character by character until '\0' terminator */
 	char* colored_line = strdup(""); // so free() works
 	bool is_colored_line = 0;
 	size_t line_index = 0;
@@ -52,6 +53,10 @@ char* grep_line(const char* line, const GrepOptions* options) {
 		char c = line[line_index];
 		char c_toupper = (char)(options->ignore_case ? toupper(c) : c);
 		bool c_is_alpha = isalpha(c);
+
+		/* asprintf() is a very convenient way to create strings */
+		/* Each call to asprintf() will allocate a new string */
+		/* Special macro is used to free previous strings */
 
 		if (match_index == search_string_length) {
 			bool is_matching = !(is_before_alpha && is_prefix_alpha);
@@ -67,7 +72,7 @@ char* grep_line(const char* line, const GrepOptions* options) {
 			match_index = 0;
 		}
 
-		if ( (c_toupper == search_string[match_index]) && (c != '\0') ) {
+		if (c_toupper == search_string[match_index] && c != '\0') {
 			matching_substring[match_index] = c;
 			match_index += 1;
 		} else {
@@ -83,7 +88,7 @@ char* grep_line(const char* line, const GrepOptions* options) {
 		line_index++;
 	} while (line[line_index] != '\0');
 
-	//2. freeing colored line if no matches were found
+	/* Freeing colored line if no matches were found */
 	if (!is_colored_line) {
 		free(colored_line);
 		colored_line = NULL;
@@ -102,7 +107,7 @@ int grep_file(const char* file_name, const GrepOptions* options) {
 		return EXIT_FAILURE;
 	}
 
-	//1. reading file line by line using getline() from stdio.h
+	/* Reading file line by line using getline() from stdio.h */
 	char* line = NULL;
 	size_t line_size = 0; // size of the line buffer
 	ssize_t line_length; //extra s means signed, size_t is unsigned by default

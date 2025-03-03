@@ -4,11 +4,11 @@
 #include <string.h> // strlen(), strdup()
 #include <ctype.h> // toupper(), isalpha()
 
-// terminal colors
+/* Terminal color codes */
 #define ANSI_COLOR_RED "\x1b[31m"
 #define ANSI_COLOR_RESET "\x1b[0m"
 
-// use typedef to distinguish variables
+/* Use typedef to distinguish variables */
 typedef int bool;
 
 struct Options {
@@ -18,23 +18,22 @@ struct Options {
 	char* file_name;
 };
 
+/* Options are passed as read only reference instead of copy */
 int grep(const struct Options* options) {
-	// 1. trying to open input file for reading
+	/* Trying to open input file for reading */
 	FILE* file = fopen(options->file_name, "r");
 	if (file == NULL) {
 		printf("Error: No such file.\n");
 		return EXIT_FAILURE;
 	}
 
-	//2. preparing variables
-	// size_t stores max array size on x64 or x86 system
+	/* Allocating a string of the same length as the search string */
 	size_t search_string_length = strlen(options->search_string);
-	// creating matching substring of the same size as the search string
 	char* matching_substring = strdup(options->search_string);
 	if (matching_substring == NULL) { return EXIT_FAILURE; }
 	size_t match_index = 0;
 
-	// duplicating search string as upper case if necessary
+	/* Duplicating search string in upper case if necessary */
 	char* search_string = options->search_string;
 	if (options->ignore_case) {
 		search_string = strdup(options->search_string);
@@ -42,12 +41,13 @@ int grep(const struct Options* options) {
 			free(matching_substring);
 			return EXIT_FAILURE;
 		}
+		/* Always use size_t index to iterate over generic arrays */
 		for (size_t index = 0; index < search_string_length; index++) {
 			search_string[index] = toupper(search_string[index]);
 		}
 	}
 
-	// variables for checking alphabetic whole word matches
+	/* Variables required for detecting alphabetic whole word matches */
 	bool is_before_alpha = 0;
 	bool is_prefix_alpha = 0;
 	bool is_suffix_alpha = 0;
@@ -56,14 +56,14 @@ int grep(const struct Options* options) {
 		is_suffix_alpha = isalpha(search_string[search_string_length - 1]);
 	}
 
-	//3. consuming file character by character until 'EOF'
+	/* Consuming file character by character until 'EOF' */
 	int c;
 	do {
 		c = fgetc(file); // fgetc() returns int instead of char
-		int c_toupper = options->ignore_case ? toupper(c) : c;
+		char c_toupper = (char)(options->ignore_case ? toupper(c) : c);
 		bool c_is_alpha = isalpha(c);
 
-		// processing full matching substring
+		/* Matching substring is detected */
 		if (match_index == search_string_length) {
 			bool is_matching = !(is_before_alpha && is_prefix_alpha);
 			is_matching = is_matching && !(is_suffix_alpha && c_is_alpha);
@@ -77,11 +77,12 @@ int grep(const struct Options* options) {
 			match_index = 0;
 		}
 
-		// growing matching substring
-		if ( ((char)c_toupper == search_string[match_index]) && (c != EOF) ) {
+		/* Growing matching substring */
+		if (c_toupper == search_string[match_index] && c != EOF) {
 			matching_substring[match_index] = (char)c;
 			match_index += 1;
 		} else {
+			/* Printing incomplete match */
 			for (size_t index = 0; index < match_index; index++) {
 				printf("%c", matching_substring[index]);
 			}
@@ -92,7 +93,7 @@ int grep(const struct Options* options) {
 		}
 	} while (c != EOF);
 
-	//4. freeing memory used by duplicated strings
+	/* Freeing memory allocated by helper strings */
 	if (options->ignore_case) { free(search_string); }
 	free(matching_substring);
 
@@ -106,9 +107,9 @@ int main(int argc, char **argv) {
 	options.search_string = NULL;
 	options.file_name = NULL;
 
-	//1. getopt() is commonly used for basic input options parsing
+	/* getopt() is commonly used for input options parsing */
 	int c;
-	while ((c = getopt (argc, argv, "hiw")) != -1) {
+	while ((c = getopt(argc, argv, "hiw")) != -1) {
 		switch (c) {
 			case 'i':
 				options.ignore_case = 1;
@@ -124,8 +125,8 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	//2. 'optind' is a global variable from unistd.h
-	// getopt() sorts 'argv', so non-option arguments follow option arguments
+	/* 'optind' is a global variable from unistd.h */
+	/* getopt() sorts 'argv', so non-option arguments follow options */
 	if (optind + 1 < argc) {
 		options.search_string = argv[optind + 0];
 		options.file_name = argv[optind + 1];
@@ -134,11 +135,6 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 
-	//3. printing options
-	printf("Searching in: %s\n", options.file_name);
-	printf("Searching for: %s\n", options.search_string);
-	printf("Ignoring case: %s\n", options.ignore_case ? "TRUE" : "FALSE");
-	printf("Matching whole words: %s\n", options.match_whole_words ? "TRUE" : "FALSE");
-
-	return grep(&options); // options are passed as read only reference without copy
+	/* Passing structs by reference is usually cheaper */
+	return grep(&options);
 }
