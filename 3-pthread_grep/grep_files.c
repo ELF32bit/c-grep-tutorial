@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 /* Convoluted structs and functions declared here are local to this file! */
+/* Except the implementation of grep_files() for grep.h */
 
 /* Generic thread arguments for functions that use job queue */
 typedef struct ThreadArguments {
