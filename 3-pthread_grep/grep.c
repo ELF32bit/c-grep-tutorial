@@ -5,12 +5,6 @@
 #include <string.h> // strlen(), strdup()
 #include <ctype.h> // toupper(), isalpha()
 
-#include <pthread.h>
-
-/* Terminal color codes */
-#define ANSI_COLOR_RED "\x1b[31m"
-#define ANSI_COLOR_RESET "\x1b[0m"
-
 /* asprintf() macro for repeated usage without memory leaks */
 /* First use of this macro requires a heap allocated string */
 #define ASPRINTF(destination_string,  ...) {\
@@ -19,20 +13,18 @@
 	free(previous_string);\
 }
 
-void grep_result_free(GrepResult* grep_result) {
-	if (grep_result != NULL) {
-		if (grep_result->colored_string != NULL) {
-			free(grep_result->colored_string);
-		}
-		free(grep_result);
-	}
-	grep_result = NULL;
-}
+GrepLineResult grep_line(const char* line, const GrepOptions* options) {
+	GrepLineResult grep_line_result;
+	grep_line_result.colored_line = NULL;
+	grep_line_result.match_count = 0;
+	grep_line_result.exit_code = EXIT_SUCCESS;
 
-GrepResult* grep_line(const char* line, const GrepOptions* options) {
 	size_t search_string_length = strlen(options->search_string);
 	char* matching_substring = strdup(options->search_string);
-	if (matching_substring == NULL) { return NULL; }
+	if (matching_substring == NULL) {
+		grep_line_result.exit_code = EXIT_FAILURE;
+		return grep_line_result;
+	}
 	size_t match_index = 0;
 
 	char* search_string = options->search_string;
@@ -40,7 +32,8 @@ GrepResult* grep_line(const char* line, const GrepOptions* options) {
 		search_string = strdup(options->search_string);
 		if (search_string == NULL) {
 			free(matching_substring);
-			return NULL;
+			grep_line_result.exit_code = EXIT_FAILURE;
+			return grep_line_result;
 		}
 		for (size_t index = 0; index < search_string_length; index++) {
 			search_string[index] = toupper(search_string[index]);
@@ -103,22 +96,21 @@ GrepResult* grep_line(const char* line, const GrepOptions* options) {
 	if (options->ignore_case) { free(search_string); }
 	free(matching_substring);
 
-	GrepResult* grep_result = malloc(sizeof(GrepResult));
-	grep_result->colored_string = colored_line;
-	grep_result->match_count = match_count;
-	return grep_result;
+	grep_line_result.colored_line = colored_line;
+	grep_line_result.match_count = match_count;
+	return grep_line_result;
 }
 
-GrepResult* grep_file(const char* file_name, const GrepOptions* options) {
+GrepFileResult grep_file(const char* file_name, const GrepOptions* options) {
+	GrepFileResult grep_file_result;
+	grep_file_result.match_count = 0;
+	grep_file_result.exit_code = EXIT_SUCCESS;
+
 	FILE *file = fopen(file_name, "r");
 	if (file == NULL) {
-		printf("Error: No such file.\n");
-		return NULL;
+		grep_file_result.exit_code = EXIT_FAILURE;
+		return grep_file_result;
 	}
-
-	GrepResult* grep_result = malloc(sizeof(GrepResult));
-	grep_result->colored_string = NULL; // not necessary for files
-	grep_result->match_count = 0;
 
 	char* line = NULL;
 	size_t line_size = 0;
@@ -127,14 +119,19 @@ GrepResult* grep_file(const char* file_name, const GrepOptions* options) {
 
 	while ((line_length = getline(&line, &line_size, file)) != -1) {
 		line_number += 1;
-		GrepResult* line_grep_result = grep_line(line, options);
-		if (line_grep_result->colored_string != NULL) {
-			printf("[%s] %zu: %s", file_name, line_number, line_grep_result->colored_string);
+		GrepLineResult grep_line_result = grep_line(line, options);
+		grep_file_result.match_count += grep_line_result.match_count;
+		if (grep_line_result.colored_line != NULL) {
+			if (!options->_quiet) { // checking hidden internal option
+				printf("%s", ANSI_COLOR_GREEN);
+				printf("%zu", line_number);
+				printf("%s:%s", ANSI_COLOR_CYAN, ANSI_COLOR_RESET);
+				printf("%s", grep_line_result.colored_line);
+			}
+			free(grep_line_result.colored_line);
 		}
-		grep_result->match_count += line_grep_result->match_count;
-		grep_result_free(line_grep_result);
 	}
 	if (line != NULL) { free(line); }
 
-	return grep_result;
+	return grep_file_result;
 }

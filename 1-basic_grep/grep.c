@@ -30,7 +30,9 @@ int grep(const struct Options* options) {
 	/* Allocating a string of the same length as the search string */
 	size_t search_string_length = strlen(options->search_string);
 	char* matching_substring = strdup(options->search_string);
-	if (matching_substring == NULL) { return EXIT_FAILURE; }
+	if (matching_substring == NULL) {
+		return EXIT_FAILURE;
+	}
 	size_t match_index = 0;
 
 	/* Duplicating search string in upper case if necessary */

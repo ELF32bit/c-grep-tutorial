@@ -9,9 +9,7 @@ int main(int argc, char **argv) {
 	options.ignore_case = 0;
 	options.match_whole_words = 0;
 	options.search_string = NULL;
-	char* file_name = NULL;
 
-	/* getopt() is commonly used for input options parsing */
 	int c;
 	while ((c = getopt(argc, argv, "hiw")) != -1) {
 		switch (c) {
@@ -29,8 +27,7 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	/* 'optind' is a global variable from unistd.h */
-	/* getopt() sorts 'argv', so non-option arguments follow options */
+	char* file_name = NULL;
 	if (optind + 1 < argc) {
 		options.search_string = argv[optind + 0];
 		file_name = argv[optind + 1];
@@ -39,5 +36,8 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 
-	return grep_file(file_name, &options);
+	GrepFileResult grep_file_result = grep_file(file_name, &options);
+	printf("Matches found: %zu\n", grep_file_result.match_count);
+
+	return grep_file_result.exit_code;
 }

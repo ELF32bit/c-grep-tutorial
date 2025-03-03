@@ -1,4 +1,4 @@
-#include <stdlib.h> // EXIT_SUCCESS, EXIT_FAILURE
+#include <stdlib.h> // EXIT_SUCCESS, EXIT_FAILURE, atoi()
 #include <stdio.h> // printf()
 #include <unistd.h> // getopt()
 
@@ -9,10 +9,8 @@ int main(int argc, char **argv) {
 	options.ignore_case = 0;
 	options.match_whole_words = 0;
 	options.search_string = NULL;
-
-	int file_names_length = 0;
-	char** file_names = NULL;
-	int threads = 2;
+	options.available_threads = 1;
+	options._quiet = 0;
 
 	int c;
 	while ((c = getopt (argc, argv, "hiwt:")) != -1) {
@@ -24,7 +22,10 @@ int main(int argc, char **argv) {
 				options.match_whole_words = 1;
 				break;
 			case 't': // requires an argument after -t
-				threads = atoi(optarg);
+				options.available_threads = atoi(optarg);
+				if (options.available_threads < 1) {
+					options.available_threads = 1;
+				}
 				break;
 			case 'h':
 				printf("Search for PATTERN in FILE.\n");
@@ -34,8 +35,8 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	/* 'optind' is a global variable from unistd.h */
-	/* getopt() sorts 'argv', so non-option arguments follow options */
+	char** file_names = NULL;
+	int file_names_length = 0;
 	if (optind + 1 < argc) {
 		options.search_string = argv[optind + 0];
 
@@ -50,5 +51,9 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 
-	return grep_files(file_names, file_names_length, &options);
+	GrepFilesResult grep_files_result = grep_files(file_names, file_names_length, &options);
+	printf("Matches found: %zu\n", grep_files_result.match_count);
+
+	free(file_names);
+	return grep_files_result.exit_code;
 }
