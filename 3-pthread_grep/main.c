@@ -1,6 +1,6 @@
-#include <stdlib.h> // for EXIT_SUCCESS, EXIT_FAILURE syntax
-#include <stdio.h> // for printf()
-#include <unistd.h> // for getopt() argument parsing
+#include <stdlib.h> // EXIT_SUCCESS, EXIT_FAILURE
+#include <stdio.h> // printf()
+#include <unistd.h> // getopt()
 
 #include "grep.h"
 
@@ -34,11 +34,12 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	//2. 'optind' is a global variable from unistd.h
-	// getopt() sorts 'argv', so non-option arguments follow option arguments
+	/* 'optind' is a global variable from unistd.h */
+	/* getopt() sorts 'argv', so non-option arguments follow options */
 	if (optind + 1 < argc) {
 		options.search_string = argv[optind + 0];
-		// extracting multiple input files into an array
+
+		/* Extracting multiple input files into an array */
 		file_names_length = argc - (optind + 1);
 		file_names = malloc(file_names_length * sizeof(char*));
 		for (int index = (optind + 1); index < argc; index++) {
@@ -48,17 +49,6 @@ int main(int argc, char **argv) {
 		printf("Error: Bad arguments.\n");
 		return EXIT_FAILURE;
 	}
-
-	//3. printing options.
-	printf("Searching in:");
-	for (int index = 0; index < file_names_length; index++) {
-		printf(" %s", file_names[index]);
-	}
-	printf("\n");
-	printf("Searching for: %s\n", options.search_string);
-	printf("Ignoring case: %s\n", options.ignore_case ? "TRUE" : "FALSE");
-	printf("Matching whole words: %s\n", options.match_whole_words ? "TRUE" : "FALSE");
-	printf("Using threads: %d\n", threads);
 
 	return grep_files(file_names, file_names_length, &options);
 }

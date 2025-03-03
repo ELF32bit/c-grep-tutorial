@@ -7,11 +7,12 @@
 
 #include <pthread.h>
 
-// terminal colors
+/* Terminal color codes */
 #define ANSI_COLOR_RED "\x1b[31m"
 #define ANSI_COLOR_RESET "\x1b[0m"
 
-// asprintf() macro for repeated usage without memory leaks
+/* asprintf() macro for repeated usage without memory leaks */
+/* First use of this macro requires a heap allocated string */
 #define ASPRINTF(destination_string,  ...) {\
 	char* previous_string = destination_string;\
 	asprintf(&(destination_string), __VA_ARGS__);\
@@ -29,15 +30,11 @@ void grep_result_free(GrepResult* grep_result) {
 }
 
 GrepResult* grep_line(const char* line, const GrepOptions* options) {
-	//1. preparing variables
-	// size_t stores max array size on x64 or x86 system
 	size_t search_string_length = strlen(options->search_string);
-	// creating matching substring of the same size as the search string
 	char* matching_substring = strdup(options->search_string);
 	if (matching_substring == NULL) { return NULL; }
 	size_t match_index = 0;
 
-	// duplicating search string as upper case if necessary
 	char* search_string = options->search_string;
 	if (options->ignore_case) {
 		search_string = strdup(options->search_string);
@@ -50,7 +47,6 @@ GrepResult* grep_line(const char* line, const GrepOptions* options) {
 		}
 	}
 
-	// variables for checking alphabetic whole word matches
 	bool is_before_alpha = 0;
 	bool is_prefix_alpha = 0;
 	bool is_suffix_alpha = 0;
@@ -59,9 +55,7 @@ GrepResult* grep_line(const char* line, const GrepOptions* options) {
 		is_suffix_alpha = isalpha(search_string[search_string_length - 1]);
 	}
 
-	//2. consuming line character by character until '\0' terminator
-	// asprintf() macro is used to dynamically extend colored line
-	char* colored_line = strdup(""); // so free() works
+	char* colored_line = strdup("");
 	bool is_colored_line = 0;
 	size_t match_count = 0;
 	size_t line_index = 0;
@@ -71,7 +65,6 @@ GrepResult* grep_line(const char* line, const GrepOptions* options) {
 		char c_toupper = (char)(options->ignore_case ? toupper(c) : c);
 		bool c_is_alpha = isalpha(c);
 
-		// processing full matching substring
 		if (match_index == search_string_length) {
 			bool is_matching = !(is_before_alpha && is_prefix_alpha);
 			is_matching = is_matching && !(is_suffix_alpha && c_is_alpha);
@@ -86,8 +79,7 @@ GrepResult* grep_line(const char* line, const GrepOptions* options) {
 			match_index = 0;
 		}
 
-		// growing matching substring
-		if ( (c_toupper == search_string[match_index]) && (c != '\0') ) {
+		if (c_toupper == search_string[match_index] && c != '\0') {
 			matching_substring[match_index] = c;
 			match_index += 1;
 		} else {
@@ -103,13 +95,11 @@ GrepResult* grep_line(const char* line, const GrepOptions* options) {
 		line_index++;
 	} while (line[line_index] != '\0');
 
-	// freeing colored line if no matches were found
 	if (!is_colored_line) {
 		free(colored_line);
 		colored_line = NULL;
 	}
 
-	//4. freeing memory used by duplicated strings
 	if (options->ignore_case) { free(search_string); }
 	free(matching_substring);
 
@@ -120,7 +110,6 @@ GrepResult* grep_line(const char* line, const GrepOptions* options) {
 }
 
 GrepResult* grep_file(const char* file_name, const GrepOptions* options) {
-	// 1. trying to open input file for reading
 	FILE *file = fopen(file_name, "r");
 	if (file == NULL) {
 		printf("Error: No such file.\n");
@@ -131,10 +120,9 @@ GrepResult* grep_file(const char* file_name, const GrepOptions* options) {
 	grep_result->colored_string = NULL; // not necessary for files
 	grep_result->match_count = 0;
 
-	//2. reading file line by line using getline() from stdio.h
 	char* line = NULL;
-	size_t line_size = 0; // size of the line buffer
-	ssize_t line_length; //extra s means signed, size_t is unsigned by default
+	size_t line_size = 0;
+	ssize_t line_length;
 	size_t line_number = 0;
 
 	while ((line_length = getline(&line, &line_size, file)) != -1) {
