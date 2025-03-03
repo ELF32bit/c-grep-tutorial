@@ -37,7 +37,10 @@ int grep(const struct Options* options) {
 	char* search_string = options->search_string;
 	if (options->ignore_case) {
 		search_string = strdup(options->search_string);
-		if (search_string == NULL) { return EXIT_FAILURE; }
+		if (search_string == NULL) {
+			free(matching_substring);
+			return EXIT_FAILURE;
+		}
 		for (size_t index = 0; index < search_string_length; index++) {
 			search_string[index] = toupper(search_string[index]);
 		}
