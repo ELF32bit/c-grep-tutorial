@@ -19,10 +19,10 @@ And God said, Let there be light: and there was light.<br>
 3) Even more advanced grep implementation with multithreading.
 * Run the program multiple times and observe different output order.
 <table><tr><td>
-[2] ../examples/3-leviticus.txt: 2435
-[3] ../examples/3-exodus.txt: 3113
-[4] ../examples/3-numbers.txt: 3500
-[5] ../examples/3-deuteronomy.txt: 2166
-[1] ../examples/3-genesis.txt: 2458
+[2] ../examples/3-leviticus.txt: 2435<br>
+[3] ../examples/3-exodus.txt: 3113<br>
+[4] ../examples/3-numbers.txt: 3500<br>
+[5] ../examples/3-deuteronomy.txt: 2166<br>
+[1] ../examples/3-genesis.txt: 2458<br>
 Matches found: 13672
 </table></tr></td>
