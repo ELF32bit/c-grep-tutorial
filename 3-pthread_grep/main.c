@@ -11,16 +11,20 @@ int main(int argc, char **argv) {
 	options.search_string = NULL;
 	int file_names_length = 0;
 	char** file_names = NULL;
+	int threads = 2;
 
 	//1. getopt() is commonly used for basic input options parsing
 	char c;
-	while ((c = getopt (argc, argv, "hiw")) != -1) {
+	while ((c = getopt (argc, argv, "hiwt:")) != -1) {
 		switch (c) {
 			case 'i':
 				options.ignore_case = 1;
 				break;
 			case 'w':
 				options.match_whole_words = 1;
+				break;
+			case 't':
+				threads = atoi(optarg);
 				break;
 			case 'h':
 				printf("Search for PATTERN in FILE.\n");
@@ -54,6 +58,7 @@ int main(int argc, char **argv) {
 	printf("Searching for: %s\n", options.search_string);
 	printf("Ignoring case: %s\n", options.ignore_case ? "TRUE" : "FALSE");
 	printf("Matching whole words: %s\n", options.match_whole_words ? "TRUE" : "FALSE");
+	printf("Using threads: %d\n", threads);
 
 	return grep_files(file_names, file_names_length, &options);
 }

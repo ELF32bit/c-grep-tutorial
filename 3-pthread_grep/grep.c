@@ -12,7 +12,7 @@
 #define ANSI_COLOR_RESET "\x1b[0m"
 
 // asprintf() macro for repeated usage without memory leaks
-#define M_ASPRINTF(destination_string,  ...) {\
+#define ASPRINTF(destination_string,  ...) {\
 	char* previous_string = destination_string;\
 	asprintf(&(destination_string), __VA_ARGS__);\
 	free(previous_string);\
@@ -75,9 +75,9 @@ GrepResult* grep_line(const char* line, const GrepOptions* options) {
 			is_matching = options->match_whole_words ? is_matching : 1;
 			if (is_matching) { is_colored_line = 1; match_count++; }
 
-			if (is_matching) { M_ASPRINTF(colored_line, "%s%s", colored_line, ANSI_COLOR_RED); }
-			M_ASPRINTF(colored_line, "%s%s", colored_line, matching_substring);
-			if (is_matching) { M_ASPRINTF(colored_line, "%s%s", colored_line, ANSI_COLOR_RESET); }
+			if (is_matching) { ASPRINTF(colored_line, "%s%s", colored_line, ANSI_COLOR_RED); }
+			ASPRINTF(colored_line, "%s%s", colored_line, matching_substring);
+			if (is_matching) { ASPRINTF(colored_line, "%s%s", colored_line, ANSI_COLOR_RESET); }
 
 			is_before_alpha = is_suffix_alpha;
 			match_index = 0;
@@ -89,9 +89,9 @@ GrepResult* grep_line(const char* line, const GrepOptions* options) {
 			match_index += 1;
 		} else {
 			for (size_t index = 0; index < match_index; index++) {
-				M_ASPRINTF(colored_line, "%s%c", colored_line, matching_substring[index]);
+				ASPRINTF(colored_line, "%s%c", colored_line, matching_substring[index]);
 			}
-			if (c != '\0') { M_ASPRINTF(colored_line, "%s%c", colored_line, c); }
+			if (c != '\0') { ASPRINTF(colored_line, "%s%c", colored_line, c); }
 
 			is_before_alpha = c_is_alpha;
 			match_index = 0;
@@ -128,7 +128,7 @@ GrepResult* grep_file(const char* file_name, const GrepOptions* options) {
 	grep_result->colored_string = NULL; // not necessary for files
 	grep_result->match_count = 0;
 
-	//2. getline() is a newer and better function defined in stdio.h
+	//2. reading file line by line using getline() from stdio.h
 	char* line = NULL;
 	size_t line_size = 0; // size of the line buffer
 	ssize_t line_length; //extra s means signed, size_t is unsigned by default
