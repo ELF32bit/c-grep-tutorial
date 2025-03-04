@@ -31,7 +31,7 @@ void job_queue_push(JobQueue* queue, void* task) {
 }
 
 void* job_queue_pop(JobQueue* queue) {
-	pthread_mutex_lock(&queue->mutex);
+	if (pthread_mutex_lock(&queue->mutex)) { return NULL; }
 	void* task = NULL;
 	if (queue->head != NULL) {
 		Job* job = queue->head;
