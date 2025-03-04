@@ -32,7 +32,7 @@ void* thread_grep_file(void* arguments) {
 		task = (GrepFileTask*)job_queue_pop(args->job_queue);
 		if (task == NULL) { break; }
 
-		/* grep_file() logic starts */
+		/* Function logic starts */
 		GrepFileResult grep_file_result;
 		grep_file_result = grep_file(task->file_name, task->options);
 		*match_count += grep_file_result.match_count;
@@ -42,7 +42,7 @@ void* thread_grep_file(void* arguments) {
 		printf("%s%s", ANSI_COLOR_MAGENTA, task->file_name);
 		printf("%s:%s", ANSI_COLOR_CYAN, ANSI_COLOR_RESET);
 		printf(" %zu\n", grep_file_result.match_count);
-		/* grep_file() logic ends */
+		/* Function logic ends */
 
 		free(task);
 	}
