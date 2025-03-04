@@ -2,4 +2,4 @@
 # CMake and Scons (Python) are proper build systems used by real projects
 all:
 	clang main.c grep.c -o grep && \
-	./grep -i -w "the" ../examples/2-advanced_grep.txt
+	./grep -i -w "the" ../examples/3-advanced_grep.txt

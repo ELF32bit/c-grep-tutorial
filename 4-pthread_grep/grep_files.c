@@ -27,6 +27,7 @@ static void* thread_grep_file(void* arguments) {
 
 	/* Variables returned from this function must be heap allocated */
 	int* match_count = malloc(sizeof(int));
+	*match_count = 0;
 
 	GrepFileTask* task = NULL;
 	while (1) {
