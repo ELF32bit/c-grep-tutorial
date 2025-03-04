@@ -97,19 +97,19 @@ GrepStringResult grep_string(const char* string, const GrepOptions* options) {
 			match_index = 0;
 		}
 
-		if (c_toupper == search_string[match_index] && c != '\0') {
+		if (c_toupper == search_string[match_index] && c != L'\0') {
 			matching_substring[match_index] = c;
 			match_index += 1;
 		} else {
 			for (size_t index = 0; index < match_index; index++) {
 				ASPRINTF(colored_string, "%s%lc", colored_string, matching_substring[index]);
 			}
-			if (c != '\0') { ASPRINTF(colored_string, "%s%lc", colored_string, c); }
+			if (c != L'\0') { ASPRINTF(colored_string, "%s%lc", colored_string, c); }
 
 			is_before_alpha = c_is_alpha;
 			match_index = 0;
 		}
-	} while (c != '\0');
+	} while (c != L'\0');
 
 	if (!is_colored_string) {
 		free(colored_string);
