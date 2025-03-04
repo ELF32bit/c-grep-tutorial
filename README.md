@@ -11,7 +11,7 @@ And God said, Let there be light: and there was light.<br>
 * To support UTF-8
 <table><tr><td>
 בראשית ברא אלהים <ins>את</ins>👋️ השמים ואת👋️ הארץ<br>
-את👋️ואת👋️ואת👋️<ins>את</ins>👋️<ins>את</ins>👋️👋️ואת
+<ins>את</ins>👋️ואת👋️ואת👋️<ins>את</ins>👋️<ins>את</ins>👋️👋️ואת
 </table></tr></td>
 
 3) More advanced grep implementation that prints individual lines.
