@@ -56,8 +56,9 @@ GrepStringResult grep_string(const char* string, const GrepOptions* options) {
 	size_t match_count = 0;
 	size_t string_index = 0;
 
+	char c;
 	do {
-		char c = string[string_index];
+		c = string[string_index]; string_index++;
 		char c_toupper = (char)(options->ignore_case ? toupper(c) : c);
 		bool c_is_alpha = isalpha(c);
 
@@ -91,9 +92,7 @@ GrepStringResult grep_string(const char* string, const GrepOptions* options) {
 			is_before_alpha = c_is_alpha;
 			match_index = 0;
 		}
-
-		string_index++;
-	} while (string[string_index] != '\0');
+	} while (c != '\0');
 
 	/* Freeing colored string if no matches were found */
 	if (!is_colored_string) {

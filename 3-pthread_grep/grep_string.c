@@ -1,9 +1,9 @@
 #include "grep.h"
 
 #include <stdlib.h> // EXIT_SUCCESS, EXIT_FAILURE
-#include <stdio.h> // asprintf(), fopen(), getline()
 #include <string.h> // strlen(), strdup()
 #include <ctype.h> // toupper(), isalpha()
+#include <stdio.h> // asprintf()
 
 /* asprintf() macro for repeated usage without memory leaks */
 /* First use of this macro requires a heap allocated string */
@@ -53,8 +53,9 @@ GrepStringResult grep_string(const char* string, const GrepOptions* options) {
 	size_t match_count = 0;
 	size_t string_index = 0;
 
+	char c;
 	do {
-		char c = string[string_index];
+		c = string[string_index]; string_index++;
 		char c_toupper = (char)(options->ignore_case ? toupper(c) : c);
 		bool c_is_alpha = isalpha(c);
 
@@ -84,9 +85,7 @@ GrepStringResult grep_string(const char* string, const GrepOptions* options) {
 			is_before_alpha = c_is_alpha;
 			match_index = 0;
 		}
-
-		string_index++;
-	} while (string[string_index] != '\0');
+	} while (c != '\0');
 
 	if (!is_colored_string) {
 		free(colored_string);
@@ -99,41 +98,4 @@ GrepStringResult grep_string(const char* string, const GrepOptions* options) {
 	grep_string_result.colored_string = colored_string;
 	grep_string_result.match_count = match_count;
 	return grep_string_result;
-}
-
-GrepFileResult grep_file(const char* file_name, const GrepOptions* options) {
-	GrepFileResult grep_file_result;
-	grep_file_result.match_count = 0;
-	grep_file_result.exit_code = EXIT_SUCCESS;
-
-	FILE *file = fopen(file_name, "r");
-	if (file == NULL) {
-		grep_file_result.exit_code = EXIT_FAILURE;
-		return grep_file_result;
-	}
-
-	char* line = NULL;
-	size_t line_size = 0;
-	ssize_t line_length;
-	size_t line_number = 0;
-
-	while ((line_length = getline(&line, &line_size, file)) != -1) {
-		line_number += 1;
-		GrepStringResult grep_string_result = grep_string(line, options);
-		grep_file_result.match_count += grep_string_result.match_count;
-		if (grep_string_result.colored_string != NULL) {
-			if (!options->_quiet) { // checking hidden internal option
-				printf("%s", ANSI_COLOR_GREEN);
-				printf("%zu", line_number);
-				printf("%s:%s", ANSI_COLOR_CYAN, ANSI_COLOR_RESET);
-				printf("%s", grep_string_result.colored_string);
-			}
-			free(grep_string_result.colored_string); // free() after use
-		}
-	}
-
-	if (line != NULL) { free(line); }
-	fclose(file);
-
-	return grep_file_result;
 }
