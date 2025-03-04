@@ -31,10 +31,9 @@ void job_queue_push(JobQueue* queue, void* task) {
 }
 
 void* job_queue_pop(JobQueue* queue) {
-	pthread_mutex_lock(&queue->mutex);
-	void* task;
-	if (queue->head == NULL) { task = NULL; }
-	else {
+	if (pthread_mutex_lock(&queue->mutex)) { return NULL; }
+	void* task = NULL;
+	if (queue->head != NULL) {
 		Job* job = queue->head;
 		task = queue->head->task;
 		if (queue->head == queue->tail) {
@@ -52,8 +51,11 @@ void* job_queue_pop(JobQueue* queue) {
 void job_queue_free(JobQueue* queue) {
 	if (queue == NULL) { return; }
 	while (queue->head != NULL) {
-		void* task = job_queue_pop(queue);
+		Job* job = queue->head;
+		void* task = queue->head->task;
 		if (task != NULL) { free(task); };
+		queue->head = queue->head->next;
+		free(job);
 	}
 	pthread_mutex_destroy(&queue->mutex);
 	free(queue);
