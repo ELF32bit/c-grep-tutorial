@@ -1,6 +1,7 @@
 #include <stdlib.h> // EXIT_SUCCESS, EXIT_FAILURE
-#include <stdio.h> // printf()
+#include <locale.h> // setlocale()
 #include <unistd.h> // getopt()
+#include <stdio.h> // printf()
 
 #include "grep.h"
 
@@ -9,6 +10,8 @@ int main(int argc, char **argv) {
 	options.ignore_case = 0;
 	options.match_whole_words = 0;
 	options.search_string = NULL;
+
+	setlocale(LC_ALL, "C.UTF8");
 
 	int c;
 	while ((c = getopt(argc, argv, "hiw")) != -1) {

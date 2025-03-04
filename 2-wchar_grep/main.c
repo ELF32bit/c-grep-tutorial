@@ -1,9 +1,9 @@
-#include <stdlib.h> // EXIT_SUCCESS, EXIT_FAILURE, calloc(), mbstowcs()
-#include <stdio.h> // printf(), fopen(), fclose()
+#include <stdlib.h> // EXIT_SUCCESS, EXIT_FAILURE, calloc(), mbstowcs(), free()
 #include <unistd.h> // getopt()
-#include <string.h> // strlen()
+#include <stdio.h> // printf(), fopen(), fclose()
 
 /* Using same functions designed for wide characters */
+#include <string.h> // strlen()
 #include <locale.h> // setlocale()
 #include <wchar.h> // wcslen(), wcsdup()
 #include <wctype.h> // towupper(), iswalpha()
@@ -18,9 +18,21 @@ typedef int bool;
 struct Options {
 	bool ignore_case;
 	bool match_whole_words;
-	wchar_t* search_string; // free() after use
+	char* search_string;
 	char* file_name;
 };
+
+/* Function to convert regular strings to wide character strings */
+wchar_t* convert_string(const char* string) {
+	size_t string_size = strlen(string) + 1;
+	wchar_t* wide_character_string = calloc(string_size, sizeof(wchar_t));
+	if (wide_character_string == NULL) { return NULL; }
+	if (mbstowcs(wide_character_string, string, string_size) == (size_t)-1) {
+		free(wide_character_string);
+		return NULL;
+	}
+	return wide_character_string;
+}
 
 int grep(const struct Options* options) {
 	FILE* file = fopen(options->file_name, "r");
@@ -29,18 +41,22 @@ int grep(const struct Options* options) {
 		return EXIT_FAILURE;
 	}
 
-	size_t search_string_length = wcslen(options->search_string);
-	wchar_t* matching_substring = wcsdup(options->search_string);
-	if (matching_substring == NULL) { return EXIT_FAILURE; }
+	/* Converting search string to wide character string */
+	wchar_t* search_string = convert_string(options->search_string);
+	if (search_string == NULL) {
+		printf("Error: Failed converting search string.");
+		return EXIT_FAILURE;
+	}
+
+	size_t search_string_length = wcslen(search_string);
+	wchar_t* matching_substring = wcsdup(search_string);
+	if (matching_substring == NULL) {
+		free(search_string);
+		return EXIT_FAILURE;
+	}
 	size_t match_index = 0;
 
-	wchar_t* search_string = options->search_string;
 	if (options->ignore_case) {
-		search_string = wcsdup(options->search_string);
-		if (search_string == NULL) {
-			free(matching_substring);
-			return EXIT_FAILURE;
-		}
 		for (size_t index = 0; index < search_string_length; index++) {
 			search_string[index] = towupper(search_string[index]);
 		}
@@ -88,7 +104,7 @@ int grep(const struct Options* options) {
 		}
 	} while (c != WEOF);
 
-	if (options->ignore_case) { free(search_string); }
+	free(search_string);
 	free(matching_substring);
 	fclose(file);
 
@@ -124,28 +140,12 @@ int main(int argc, char **argv) {
 	}
 
 	if (optind + 1 < argc) {
-		char* search_string = argv[optind + 0];
-		size_t search_string_size = strlen(search_string) + 1;
-
-		/* Allocating terminated wide character string of enough size */
-		wchar_t* wcs = calloc(search_string_size, sizeof(wchar_t));
-		if (wcs == NULL) { return EXIT_FAILURE; } // not enough memory
-		if (mbstowcs(wcs, search_string, search_string_size) == (size_t)-1) {
-			free(wcs);
-			printf("Error: Failed converting search string.\n");
-			return EXIT_FAILURE;
-		}
-
-		options.search_string = wcs;
+		options.search_string = argv[optind + 0];
 		options.file_name = argv[optind + 1];
 	} else {
 		printf("Error: Bad arguments.\n");
 		return EXIT_FAILURE;
 	}
 
-	/* This time it's necessary to hold exit code before returning */
-	int grep_result = grep(&options);
-
-	free(options.search_string); // free() after use
-	return grep_result;
+	return grep(&options);
 }

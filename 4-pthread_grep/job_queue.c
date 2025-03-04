@@ -1,6 +1,6 @@
 #include "job_queue.h"
 
-#include <stdlib.h>
+#include <stdlib.h> // malloc(), free()
 
 JobQueue* job_queue_new() {
 	JobQueue* queue = malloc(sizeof(JobQueue));

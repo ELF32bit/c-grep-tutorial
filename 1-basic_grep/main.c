@@ -1,6 +1,6 @@
 #include <stdlib.h> // EXIT_SUCCESS, EXIT_FAILURE
-#include <stdio.h> // printf(), fopen(), fclose()
 #include <unistd.h> // getopt()
+#include <stdio.h> // printf(), fopen(), fclose()
 #include <string.h> // strlen(), strdup()
 #include <ctype.h> // toupper(), isalpha()
 
