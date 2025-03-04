@@ -93,9 +93,10 @@ int grep(const struct Options* options) {
 		}
 	} while (c != EOF);
 
-	/* Freeing memory allocated by helper strings */
+	/* Freeing memory allocated by helper strings and closing file */
 	if (options->ignore_case) { free(search_string); }
 	free(matching_substring);
+	fclose(file);
 
 	return EXIT_SUCCESS;
 }

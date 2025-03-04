@@ -140,7 +140,9 @@ GrepFileResult grep_file(const char* file_name, const GrepOptions* options) {
 			free(grep_string_result.colored_string); // free() after use
 		}
 	}
+
 	if (line != NULL) { free(line); }
+	fclose(file);
 
 	return grep_file_result;
 }
