@@ -57,17 +57,21 @@ GrepFilesResult grep_files(char** file_names, int file_names_length, const GrepO
 	grep_files_result.match_count = 0;
 	grep_files_result.exit_code = EXIT_SUCCESS;
 
+	/* Enabling internal option to disable line printing */
+	grep_file_quiet_G = 1;
+
 	/* Not using multithreaded logic if only 1 thread is available */
 	if (options->available_threads == 1) {
 		for (int index = 0; index < file_names_length; index++) {
-			/* Printing file name before matching lines */
-			printf("%s%s", ANSI_COLOR_MAGENTA, file_names[index]);
-			printf("%s\n", ANSI_COLOR_RESET);
-
 			GrepFileResult grep_file_result;
 			grep_file_result = grep_file(file_names[index], options);
 			grep_files_result.match_count += grep_file_result.match_count;
+
+			printf("%s%s", ANSI_COLOR_MAGENTA, file_names[index]);
+			printf("%s:%s", ANSI_COLOR_CYAN, ANSI_COLOR_RESET);
+			printf(" %zu\n", grep_file_result.match_count);
 		}
+		grep_file_quiet_G = 0; // restoring internal option
 		return grep_files_result;
 	}
 
@@ -75,6 +79,7 @@ GrepFilesResult grep_files(char** file_names, int file_names_length, const GrepO
 	JobQueue* job_queue = job_queue_new();
 	if (job_queue == NULL) {
 		grep_files_result.exit_code = EXIT_FAILURE;
+		grep_file_quiet_G = 0; // restoring internal option
 		return grep_files_result;
 	}
 
@@ -84,9 +89,6 @@ GrepFilesResult grep_files(char** file_names, int file_names_length, const GrepO
 		task->options = options;
 		job_queue_push(job_queue, (void*)task);
 	}
-
-	/* Enabling internal option to disable line printing */
-	grep_file_quiet_G = 1;
 
 	/* Creating and starting threads */
 	pthread_t* threads = malloc(options->available_threads * sizeof(pthread_t));
@@ -114,12 +116,10 @@ GrepFilesResult grep_files(char** file_names, int file_names_length, const GrepO
 		free(match_count);
 	}
 
-	/* Disabling internal option to restore normal functionality */
-	grep_file_quiet_G = 0;
-
 	/* Freeing threads and job queue */
 	free(threads);
 	job_queue_free(job_queue);
 
+	grep_file_quiet_G = 0; // restoring internal option
 	return grep_files_result;
 }
