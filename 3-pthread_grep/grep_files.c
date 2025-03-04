@@ -71,17 +71,22 @@ GrepFilesResult grep_files(char** file_names, int file_names_length, const GrepO
 		return grep_files_result;
 	}
 
-	/* Enabling internal option to disable line printing */
-	grep_file_quiet_G = 1;
-
 	/* Creating job queue with tasks for threads to process */
 	JobQueue* job_queue = job_queue_new();
+	if (job_queue == NULL) {
+		grep_files_result.exit_code = EXIT_FAILURE;
+		return grep_files_result;
+	}
+
 	for (int index = 0; index < file_names_length; index++) {
 		GrepFileTask* task = malloc(sizeof(GrepFileTask));
 		task->file_name = file_names[index];
 		task->options = options;
 		job_queue_push(job_queue, (void*)task);
 	}
+
+	/* Enabling internal option to disable line printing */
+	grep_file_quiet_G = 1;
 
 	/* Creating and starting threads */
 	pthread_t* threads = malloc(options->available_threads * sizeof(pthread_t));
@@ -109,12 +114,12 @@ GrepFilesResult grep_files(char** file_names, int file_names_length, const GrepO
 		free(match_count);
 	}
 
+	/* Disabling internal option */
+	grep_file_quiet_G = 0;
+
 	/* Freeing threads and job queue */
 	free(threads);
 	job_queue_free(job_queue);
-
-	/* Disabling internal option */
-	grep_file_quiet_G = 0;
 
 	return grep_files_result;
 }
