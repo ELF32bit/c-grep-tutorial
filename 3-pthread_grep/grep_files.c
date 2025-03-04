@@ -112,5 +112,8 @@ GrepFilesResult grep_files(char** file_names, int file_names_length, GrepOptions
 	free(threads);
 	job_queue_free(job_queue);
 
+	/* Disabling hidden internal option */
+	options->_quiet = 0;
+
 	return grep_files_result;
 }

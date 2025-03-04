@@ -22,11 +22,11 @@ typedef struct GrepOptions {
 } GrepOptions;
 
 /* Use typedef for structs to improve readability */
-typedef struct GrepLineResult {
-	char* colored_line; // free() after use
+typedef struct GrepStringResult {
+	char* colored_string; // free() after use
 	size_t match_count;
 	int exit_code;
-} GrepLineResult;
+} GrepStringResult;
 
 typedef struct GrepFileResult {
 	size_t match_count;
@@ -34,7 +34,7 @@ typedef struct GrepFileResult {
 } GrepFileResult;
 
 /* Always prefix functions with header name */
-GrepLineResult grep_line(const char* line, const GrepOptions* options);
+GrepStringResult grep_string(const char* string, const GrepOptions* options);
 GrepFileResult grep_file(const char* file_name, const GrepOptions* options);
 
 #endif

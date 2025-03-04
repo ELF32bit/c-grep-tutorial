@@ -14,7 +14,7 @@ typedef struct Job {
 typedef struct JobQueue {
 	struct Job* head;
 	struct Job* tail;
-	pthread_mutex_t mutex;
+	pthread_mutex_t mutex; /* Mutex prevents race conditions */
 } JobQueue;
 
 /* Always prefix functions with header name */

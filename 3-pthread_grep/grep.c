@@ -13,17 +13,17 @@
 	free(previous_string);\
 }
 
-GrepLineResult grep_line(const char* line, const GrepOptions* options) {
-	GrepLineResult grep_line_result;
-	grep_line_result.colored_line = NULL;
-	grep_line_result.match_count = 0;
-	grep_line_result.exit_code = EXIT_SUCCESS;
+GrepStringResult grep_string(const char* string, const GrepOptions* options) {
+	GrepStringResult grep_string_result;
+	grep_string_result.colored_string = NULL;
+	grep_string_result.match_count = 0;
+	grep_string_result.exit_code = EXIT_SUCCESS;
 
 	size_t search_string_length = strlen(options->search_string);
 	char* matching_substring = strdup(options->search_string);
 	if (matching_substring == NULL) {
-		grep_line_result.exit_code = EXIT_FAILURE;
-		return grep_line_result;
+		grep_string_result.exit_code = EXIT_FAILURE;
+		return grep_string_result;
 	}
 	size_t match_index = 0;
 
@@ -32,8 +32,8 @@ GrepLineResult grep_line(const char* line, const GrepOptions* options) {
 		search_string = strdup(options->search_string);
 		if (search_string == NULL) {
 			free(matching_substring);
-			grep_line_result.exit_code = EXIT_FAILURE;
-			return grep_line_result;
+			grep_string_result.exit_code = EXIT_FAILURE;
+			return grep_string_result;
 		}
 		for (size_t index = 0; index < search_string_length; index++) {
 			search_string[index] = toupper(search_string[index]);
@@ -48,13 +48,13 @@ GrepLineResult grep_line(const char* line, const GrepOptions* options) {
 		is_suffix_alpha = isalpha(search_string[search_string_length - 1]);
 	}
 
-	char* colored_line = strdup("");
-	bool is_colored_line = 0;
+	char* colored_string = strdup("");
+	bool is_colored_string = 0;
 	size_t match_count = 0;
-	size_t line_index = 0;
+	size_t string_index = 0;
 
 	do {
-		char c = line[line_index];
+		char c = string[string_index];
 		char c_toupper = (char)(options->ignore_case ? toupper(c) : c);
 		bool c_is_alpha = isalpha(c);
 
@@ -62,11 +62,11 @@ GrepLineResult grep_line(const char* line, const GrepOptions* options) {
 			bool is_matching = !(is_before_alpha && is_prefix_alpha);
 			is_matching = is_matching && !(is_suffix_alpha && c_is_alpha);
 			is_matching = options->match_whole_words ? is_matching : 1;
-			if (is_matching) { is_colored_line = 1; match_count++; }
+			if (is_matching) { is_colored_string = 1; match_count++; }
 
-			if (is_matching) { ASPRINTF(colored_line, "%s%s", colored_line, ANSI_COLOR_RED); }
-			ASPRINTF(colored_line, "%s%s", colored_line, matching_substring);
-			if (is_matching) { ASPRINTF(colored_line, "%s%s", colored_line, ANSI_COLOR_RESET); }
+			if (is_matching) { ASPRINTF(colored_string, "%s%s", colored_string, ANSI_COLOR_RED); }
+			ASPRINTF(colored_string, "%s%s", colored_string, matching_substring);
+			if (is_matching) { ASPRINTF(colored_string, "%s%s", colored_string, ANSI_COLOR_RESET); }
 
 			is_before_alpha = is_suffix_alpha;
 			match_index = 0;
@@ -77,28 +77,28 @@ GrepLineResult grep_line(const char* line, const GrepOptions* options) {
 			match_index += 1;
 		} else {
 			for (size_t index = 0; index < match_index; index++) {
-				ASPRINTF(colored_line, "%s%c", colored_line, matching_substring[index]);
+				ASPRINTF(colored_string, "%s%c", colored_string, matching_substring[index]);
 			}
-			if (c != '\0') { ASPRINTF(colored_line, "%s%c", colored_line, c); }
+			if (c != '\0') { ASPRINTF(colored_string, "%s%c", colored_string, c); }
 
 			is_before_alpha = c_is_alpha;
 			match_index = 0;
 		}
 
-		line_index++;
-	} while (line[line_index] != '\0');
+		string_index++;
+	} while (string[string_index] != '\0');
 
-	if (!is_colored_line) {
-		free(colored_line);
-		colored_line = NULL;
+	if (!is_colored_string) {
+		free(colored_string);
+		colored_string = NULL;
 	}
 
 	if (options->ignore_case) { free(search_string); }
 	free(matching_substring);
 
-	grep_line_result.colored_line = colored_line;
-	grep_line_result.match_count = match_count;
-	return grep_line_result;
+	grep_string_result.colored_string = colored_string;
+	grep_string_result.match_count = match_count;
+	return grep_string_result;
 }
 
 GrepFileResult grep_file(const char* file_name, const GrepOptions* options) {
@@ -119,16 +119,16 @@ GrepFileResult grep_file(const char* file_name, const GrepOptions* options) {
 
 	while ((line_length = getline(&line, &line_size, file)) != -1) {
 		line_number += 1;
-		GrepLineResult grep_line_result = grep_line(line, options);
-		grep_file_result.match_count += grep_line_result.match_count;
-		if (grep_line_result.colored_line != NULL) {
+		GrepStringResult grep_string_result = grep_string(line, options);
+		grep_file_result.match_count += grep_string_result.match_count;
+		if (grep_string_result.colored_string != NULL) {
 			if (!options->_quiet) { // checking hidden internal option
 				printf("%s", ANSI_COLOR_GREEN);
 				printf("%zu", line_number);
 				printf("%s:%s", ANSI_COLOR_CYAN, ANSI_COLOR_RESET);
-				printf("%s", grep_line_result.colored_line);
+				printf("%s", grep_string_result.colored_string);
 			}
-			free(grep_line_result.colored_line);
+			free(grep_string_result.colored_string); // free() after use
 		}
 	}
 	if (line != NULL) { free(line); }
