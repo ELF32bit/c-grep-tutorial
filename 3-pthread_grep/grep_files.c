@@ -114,7 +114,7 @@ GrepFilesResult grep_files(char** file_names, int file_names_length, const GrepO
 		free(match_count);
 	}
 
-	/* Disabling internal option */
+	/* Disabling internal option to restore normal functionality */
 	grep_file_quiet_G = 0;
 
 	/* Freeing threads and job queue */
