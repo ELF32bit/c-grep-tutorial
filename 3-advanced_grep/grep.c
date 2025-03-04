@@ -86,7 +86,7 @@ GrepStringResult grep_string(const char* string, const GrepOptions* options) {
 		wchar_t c_toupper = (wchar_t)(options->ignore_case ? towupper(c) : c);
 		bool c_is_alpha = iswalpha(c);
 
-		/* asprintf() is a very convenient way to create strings */
+		/* asprintf() provides a very convenient way to create strings */
 		/* Each call to asprintf() will allocate a new string */
 		/* Special macro is used to free previous strings */
 
