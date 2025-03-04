@@ -10,7 +10,6 @@ int main(int argc, char **argv) {
 	options.match_whole_words = 0;
 	options.search_string = NULL;
 	options.available_threads = 1;
-	options._quiet = 0;
 
 	int c;
 	while ((c = getopt (argc, argv, "hiwt:")) != -1) {

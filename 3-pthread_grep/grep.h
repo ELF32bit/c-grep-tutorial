@@ -14,13 +14,16 @@
 
 typedef int bool;
 
+/* Declaring global variable, check grep_file.c */
+/* Use global variables to store internal options */
+extern bool grep_file_quiet_G;
+
 /* Always prefix structs with header name */
 typedef struct GrepOptions {
 	bool ignore_case;
 	bool match_whole_words;
 	char* search_string;
 	int available_threads;
-	bool _quiet; // hidden internal option
 } GrepOptions;
 
 /* Use typedef for structs to improve readability */
@@ -43,8 +46,6 @@ typedef struct GrepFilesResult {
 /* Always prefix functions with header name */
 GrepStringResult grep_string(const char* string, const GrepOptions* options);
 GrepFileResult grep_file(const char* file_name, const GrepOptions* options);
-
-/* Options are not passed as 'const', they will be modified */
-GrepFilesResult grep_files(char** file_names, int file_names_length, GrepOptions* options);
+GrepFilesResult grep_files(char** file_names, int file_names_length, const GrepOptions* options);
 
 #endif

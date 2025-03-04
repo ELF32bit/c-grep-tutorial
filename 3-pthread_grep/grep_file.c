@@ -3,6 +3,9 @@
 #include <stdlib.h> // EXIT_SUCCESS, EXIT_FAILURE
 #include <stdio.h> // fopen(), getline(), printf(), fclose()
 
+/* Initializing global variable declared in grep.h */
+bool grep_file_quiet_G = 0;
+
 GrepFileResult grep_file(const char* file_name, const GrepOptions* options) {
 	GrepFileResult grep_file_result;
 	grep_file_result.match_count = 0;
@@ -24,7 +27,7 @@ GrepFileResult grep_file(const char* file_name, const GrepOptions* options) {
 		GrepStringResult grep_string_result = grep_string(line, options);
 		grep_file_result.match_count += grep_string_result.match_count;
 		if (grep_string_result.colored_string != NULL) {
-			if (!options->_quiet) { // checking hidden internal option
+			if (!grep_file_quiet_G) { // using internal option
 				printf("%s", ANSI_COLOR_GREEN);
 				printf("%zu", line_number);
 				printf("%s:%s", ANSI_COLOR_CYAN, ANSI_COLOR_RESET);

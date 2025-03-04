@@ -5,8 +5,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-/* Structs and functions declared here are local to this file! */
-/* Except the implementation of grep_files() for grep.h */
+/* This file implements grep_files() for grep.h */
+/* Other structs and functions declared here are limited to this file! */
+/* Use 'static' to declare local functions and local global variables */
 
 /* Generic thread arguments for functions that use job queue */
 typedef struct ThreadArguments {
@@ -21,7 +22,7 @@ typedef struct GrepFileTask {
 } GrepFileTask;
 
 /* Generic thread function that calls grep_file() */
-void* thread_grep_file(void* arguments) {
+static void* thread_grep_file(void* arguments) {
 	ThreadArguments* args = (ThreadArguments*)arguments;
 
 	/* Variables returned from this function must be heap allocated */
@@ -51,7 +52,7 @@ void* thread_grep_file(void* arguments) {
 	return (void*)match_count;
 }
 
-GrepFilesResult grep_files(char** file_names, int file_names_length, GrepOptions* options) {
+GrepFilesResult grep_files(char** file_names, int file_names_length, const GrepOptions* options) {
 	GrepFilesResult grep_files_result;
 	grep_files_result.match_count = 0;
 	grep_files_result.exit_code = EXIT_SUCCESS;
@@ -70,8 +71,8 @@ GrepFilesResult grep_files(char** file_names, int file_names_length, GrepOptions
 		return grep_files_result;
 	}
 
-	/* Enabling hidden internal option to disable line printing */
-	options->_quiet = 1;
+	/* Enabling internal option to disable line printing */
+	grep_file_quiet_G = 1;
 
 	/* Creating job queue with tasks for threads to process */
 	JobQueue* job_queue = job_queue_new();
@@ -112,8 +113,8 @@ GrepFilesResult grep_files(char** file_names, int file_names_length, GrepOptions
 	free(threads);
 	job_queue_free(job_queue);
 
-	/* Disabling hidden internal option */
-	options->_quiet = 0;
+	/* Disabling internal option */
+	grep_file_quiet_G = 0;
 
 	return grep_files_result;
 }
