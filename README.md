@@ -7,11 +7,11 @@ And God said, Let there be light: and there was light.<br>
 <ins>the</ins>;<ins>The</ins>;<ins>THE</ins>;TheThe;TheTheThe;th
 </table></tr></td>
 
-2) wchar_t grep implementation
+2) Basic wide character grep implementation to support more languages.
 * To support UTF-8
 <table><tr><td>
-בראשית ברא אלהים את👋️ השמים ואת👋️ הארץ<br>
-את👋️ואת👋️ואת👋️את👋️את👋️👋️ואת
+בראשית ברא אלהים <ins/>את<ins>👋️ השמים ואת👋️ הארץ<br>
+את👋️ואת👋️ואת👋️<ins/>את<ins>👋️<ins/>את<ins>👋️👋️ואת
 </table></tr></td>
 
 3) More advanced grep implementation that prints individual lines.
