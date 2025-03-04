@@ -7,7 +7,14 @@ And God said, Let there be light: and there was light.<br>
 <ins>the</ins>;<ins>The</ins>;<ins>THE</ins>;TheThe;TheTheThe;th
 </table></tr></td>
 
-2) More advanced grep implementation that prints individual lines.
+2) wchar_t grep implementation
+* To support UTF-8
+<table><tr><td>
+בראשית ברא אלהים את👋️ השמים ואת👋️ הארץ<br>
+את👋️ואת👋️ואת👋️את👋️את👋️👋️ואת
+</table></tr></td>
+
+3) More advanced grep implementation that prints individual lines.
 * C headers are introduced to structure the program.
 * asprintf() is used to create colored lines.
 <table><tr><td>
@@ -17,7 +24,7 @@ And God said, Let there be light: and there was light.<br>
 Matches found: 9
 </table></tr></td>
 
-3) Even more advanced grep implementation with multithreading.
+4) Even more advanced grep implementation with multithreading.
 * Run the program multiple times and observe different output order.
 <table><tr><td>
 [3] ../examples/3-leviticus.txt: 2435<br>
