@@ -10,8 +10,8 @@ And God said, Let there be light: and there was light.<br>
 2) Basic wide character grep implementation to support more languages.
 * To support UTF-8
 <table><tr><td>
-בראשית ברא אלהים <ins/>את<ins>👋️ השמים ואת👋️ הארץ<br>
-את👋️ואת👋️ואת👋️<ins/>את<ins>👋️<ins/>את<ins>👋️👋️ואת
+בראשית ברא אלהים <ins>את<ins/>👋️ השמים ואת👋️ הארץ<br>
+את👋️ואת👋️ואת👋️<ins>את<ins>👋️</ins>את<ins/>👋️👋️ואת
 </table></tr></td>
 
 3) More advanced grep implementation that prints individual lines.
