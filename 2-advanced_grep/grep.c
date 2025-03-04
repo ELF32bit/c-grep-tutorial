@@ -1,7 +1,7 @@
 #include "grep.h"
 
 #include <stdlib.h> // EXIT_SUCCESS, EXIT_FAILURE
-#include <stdio.h> // asprintf(), fopen(), getline()
+#include <stdio.h> // asprintf(), fopen(), getline(), printf(), fclose()
 #include <string.h> // strlen(), strdup()
 #include <ctype.h> // toupper(), isalpha()
 

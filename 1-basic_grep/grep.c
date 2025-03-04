@@ -1,5 +1,5 @@
 #include <stdlib.h> // EXIT_SUCCESS, EXIT_FAILURE
-#include <stdio.h> // printf(), fopen()
+#include <stdio.h> // printf(), fopen(), fclose()
 #include <unistd.h> // getopt()
 #include <string.h> // strlen(), strdup()
 #include <ctype.h> // toupper(), isalpha()
