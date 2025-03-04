@@ -7,7 +7,7 @@ And God said, Let there be light: and there was light.<br>
 <ins>the</ins>;<ins>The</ins>;<ins>THE</ins>;TheThe;TheTheThe;th
 </table></tr></td>
 
-## 2. Wide character grep implementation to support more languages.
+## 2. Wide character grep implementation supporting more languages.
 * Wide characters are compiler-dependent and therefore not very portable.
 * External libraries are required to properly support various text encodings.
 <table><tr><td>
