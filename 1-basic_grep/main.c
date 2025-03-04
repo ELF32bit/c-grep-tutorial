@@ -1,4 +1,4 @@
-#include <stdlib.h> // EXIT_SUCCESS, EXIT_FAILURE
+#include <stdlib.h> // EXIT_SUCCESS, EXIT_FAILURE, free()
 #include <unistd.h> // getopt()
 #include <stdio.h> // printf(), fopen(), fclose()
 #include <string.h> // strlen(), strdup()
