@@ -1,4 +1,4 @@
-#include <stdlib.h> // EXIT_SUCCESS, EXIT_FAILURE, atoi()
+#include <stdlib.h> // EXIT_SUCCESS, EXIT_FAILURE, atoi(), free()
 #include <locale.h> // setlocale()
 #include <unistd.h> // getopt()
 #include <stdio.h> // printf()
