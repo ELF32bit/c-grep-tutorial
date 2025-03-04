@@ -33,7 +33,7 @@ GrepFileResult grep_file(const char* file_name, const GrepOptions* options) {
 				printf("%s:%s", ANSI_COLOR_CYAN, ANSI_COLOR_RESET);
 				printf("%s", grep_string_result.colored_string);
 			}
-			free(grep_string_result.colored_string); // free() after use
+			free(grep_string_result.colored_string);
 		}
 	}
 
