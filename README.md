@@ -46,3 +46,6 @@ Matches found: 9
 [1] ../examples/3-genesis.txt: 2458<br>
 Matches found: 13672
 </table></tr></td>
+
+## 6. Shared library
+* Running C code from Python
