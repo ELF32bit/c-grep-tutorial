@@ -12,12 +12,13 @@
 /* Generic thread arguments for functions that use job queue */
 typedef struct ThreadArguments {
 	JobQueue* job_queue;
+	pthread_mutex_t* mutex;
 	int thread_index;
 } ThreadArguments;
 
 /* Task structure for grep_file() job */
 typedef struct GrepFileTask {
-	char* file_name;
+	const char* file_name;
 	const GrepOptions* options;
 } GrepFileTask;
 
@@ -34,17 +35,19 @@ static void* thread_grep_file(void* arguments) {
 		task = (GrepFileTask*)job_queue_pop(args->job_queue);
 		if (task == NULL) { break; }
 
-		/* Function logic starts */
+		/* Multithreaded grep_file() logic */
 		GrepFileResult grep_file_result;
 		grep_file_result = grep_file(task->file_name, task->options);
 		*match_count += grep_file_result.match_count;
 
+		/* Mutex here ensures that threads don't print over each other */
+		pthread_mutex_lock(args->mutex);
 		printf("%s[%d]", ANSI_COLOR_YELLOW, args->thread_index + 1);
 		printf("%s ", ANSI_COLOR_RESET);
 		printf("%s%s", ANSI_COLOR_MAGENTA, task->file_name);
 		printf("%s:%s", ANSI_COLOR_CYAN, ANSI_COLOR_RESET);
 		printf(" %zu\n", grep_file_result.match_count);
-		/* Function logic ends */
+		pthread_mutex_unlock(args->mutex);
 
 		free(task);
 	}
@@ -76,6 +79,14 @@ GrepFilesResult grep_files(char** file_names, int file_names_length, const GrepO
 		return grep_files_result;
 	}
 
+	/* Another mutex is required to print results */
+	pthread_mutex_t print_mutex;
+	if (pthread_mutex_init(&print_mutex, NULL)) {
+		grep_files_result.exit_code = EXIT_FAILURE;
+		grep_file_quiet_G = 0; // restoring internal option
+		return grep_files_result;
+	}
+
 	/* Creating job queue with tasks for threads to process */
 	JobQueue* job_queue = job_queue_new();
 	if (job_queue == NULL) {
@@ -97,6 +108,7 @@ GrepFilesResult grep_files(char** file_names, int file_names_length, const GrepO
 		/* Preparing generic thread arguments */
 		ThreadArguments* args = malloc(sizeof(ThreadArguments));
 		args->job_queue = job_queue;
+		args->mutex = &print_mutex;
 		args->thread_index = index;
 
 		/* Freeing thread arguments if thread failed to start */
@@ -120,7 +132,8 @@ GrepFilesResult grep_files(char** file_names, int file_names_length, const GrepO
 	/* Freeing threads and job queue */
 	free(threads);
 	job_queue_free(job_queue);
-
+	pthread_mutex_destroy(&print_mutex);
 	grep_file_quiet_G = 0; // restoring internal option
+
 	return grep_files_result;
 }
