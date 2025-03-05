@@ -1,4 +1,10 @@
-## 1. Getopt().
+## 1. Parsing command-line arguments.
+<table><tr><td>
+./grep -h
+Search for PATTERN in FILE.
+Usage: grep [OPTIONS] PATTERN FILE
+Example: grep -i 'hello world' main.c
+<table><tr><td>
 
 ## 2. Basic grep implementation like it's 1990.
 * strlen(), toupper(), isalpha() are not designed to work with multibyte characters 😃️.
