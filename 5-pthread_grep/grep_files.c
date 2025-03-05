@@ -31,10 +31,7 @@ static void* thread_grep_file(void* arguments) {
 	*match_count = 0;
 
 	GrepFileTask* task = NULL;
-	while (1) {
-		task = (GrepFileTask*)job_queue_pop(args->job_queue);
-		if (task == NULL) { break; }
-
+	while ((task = (GrepFileTask*)job_queue_pop(args->job_queue)) != NULL) {
 		/* Multithreaded grep_file() logic */
 		GrepFileResult grep_file_result;
 		grep_file_result = grep_file(task->file_name, task->options);
@@ -49,7 +46,7 @@ static void* thread_grep_file(void* arguments) {
 		printf(" %zu\n", grep_file_result.match_count);
 		pthread_mutex_unlock(args->mutex);
 
-		free(task);
+		free(task); // freeing consumed task
 	}
 
 	free(args); // freeing consumed arguments
