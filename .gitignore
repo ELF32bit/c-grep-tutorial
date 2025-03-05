@@ -3,3 +3,5 @@
 3-wchar_grep/grep
 4-advanced_grep/grep
 5-pthread_grep/grep
+6-lib_grep/libgrep.so
+6-lib_grep/libgrep.dll
