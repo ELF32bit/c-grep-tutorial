@@ -33,11 +33,13 @@ GrepStringResult grep_string(const char* string, const GrepOptions* options) {
 	grep_string_result.match_count = 0;
 	grep_string_result.exit_code = EXIT_SUCCESS;
 
+	/* Converting search string to wide character string */
 	wchar_t* search_string = convert_string(options->search_string);
 	if (search_string == NULL) {
 		grep_string_result.exit_code = EXIT_FAILURE;
 		return grep_string_result;
 	}
+	/* Converting source string to wide character string */
 	wchar_t* source_string = convert_string(string);
 	if (source_string == NULL) {
 		free(search_string);
@@ -90,7 +92,7 @@ GrepStringResult grep_string(const char* string, const GrepOptions* options) {
 		/* Each call to asprintf() will allocate a new string */
 		/* Special macro is used to free previous strings */
 
-		if (match_index == search_string_length) {
+		if (match_index > 0 && match_index == search_string_length) {
 			bool is_matching = !(is_before_alpha && is_prefix_alpha);
 			is_matching = is_matching && !(is_suffix_alpha && c_is_alpha);
 			is_matching = options->match_whole_words ? is_matching : 1;

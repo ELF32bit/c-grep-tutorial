@@ -64,7 +64,7 @@ int grep(const struct Options* options) {
 		bool c_is_alpha = isalpha(c);
 
 		/* Matching substring is detected */
-		if (match_index == search_string_length) {
+		if (match_index > 0 && match_index == search_string_length) {
 			bool is_matching = !(is_before_alpha && is_prefix_alpha);
 			is_matching = is_matching && !(is_suffix_alpha && c_is_alpha);
 			is_matching = options->match_whole_words ? is_matching : 1;

@@ -83,7 +83,7 @@ GrepStringResult grep_string(const char* string, const GrepOptions* options) {
 		wchar_t c_toupper = (wchar_t)(options->ignore_case ? towupper(c) : c);
 		bool c_is_alpha = iswalpha(c);
 
-		if (match_index == search_string_length) {
+		if (match_index > 0 && match_index == search_string_length) {
 			bool is_matching = !(is_before_alpha && is_prefix_alpha);
 			is_matching = is_matching && !(is_suffix_alpha && c_is_alpha);
 			is_matching = options->match_whole_words ? is_matching : 1;
