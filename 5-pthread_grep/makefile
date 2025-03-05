@@ -3,8 +3,8 @@
 all:
 	clang *.c -lpthread -o grep && \
 	./grep -i -w -t 5 "the" \
-	../examples/4-genesis.txt \
-	../examples/4-exodus.txt \
-	../examples/4-leviticus.txt \
-	../examples/4-numbers.txt \
-	../examples/4-deuteronomy.txt
+	../examples/5-genesis.txt \
+	../examples/5-exodus.txt \
+	../examples/5-leviticus.txt \
+	../examples/5-numbers.txt \
+	../examples/5-deuteronomy.txt

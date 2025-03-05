@@ -1,4 +1,6 @@
-## 1. Basic grep implementation like it's 1990.
+## 1. Getopt().
+
+## 2. Basic grep implementation like it's 1990.
 * strlen(), toupper(), isalpha() are not designed to work with multibyte characters 😃️.
 * UTF-8 is the most common text encoding where each character is 1 to 4 bytes.
 <table><tr><td>
@@ -7,7 +9,7 @@ And God said, Let there be light: and there was light.<br>
 <ins>the</ins>;<ins>The</ins>;<ins>THE</ins>;TheThe;TheTheThe;th
 </table></tr></td>
 
-## 2. Wide character grep implementation supporting more languages.
+## 3. Wide character grep implementation supporting more languages.
 * Wide characters are compiler-dependent and therefore not very portable.
 * External libraries are required to properly support various text encodings.
 <table><tr><td>
@@ -15,7 +17,7 @@ And God said, Let there be light: and there was light.<br>
 <ins>את</ins>👋️ואת👋️ואת👋️<ins>את</ins>👋️<ins>את</ins>👋️👋️ואת
 </table></tr></td>
 
-## 3. More advanced grep implementation printing individual lines.
+## 4. More advanced grep implementation printing individual lines.
 * C headers are introduced to structure the program.
 * getline() is used to read file line by line without limitations.
 * asprintf() is used to easily create generic strings.
@@ -26,7 +28,7 @@ And God said, Let there be light: and there was light.<br>
 Matches found: 9
 </table></tr></td>
 
-## 4. Even more advanced grep implementation with multithreading.
+## 5. Even more advanced grep implementation with multithreading.
 * Run the program multiple times and observe different output order.
 * Threads receive jobs from a special thread-safe queue.
 * Multiple files can now be provided as input.
