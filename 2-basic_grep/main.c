@@ -43,7 +43,7 @@ int grep(const struct Options* options) {
 		}
 		/* Always use size_t index to iterate over generic arrays */
 		for (size_t index = 0; index < search_string_length; index++) {
-			search_string[index] = toupper(search_string[index]);
+			search_string[index] = (char)toupper(search_string[index]);
 		}
 	}
 

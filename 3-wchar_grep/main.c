@@ -58,7 +58,7 @@ int grep(const struct Options* options) {
 
 	if (options->ignore_case) {
 		for (size_t index = 0; index < search_string_length; index++) {
-			search_string[index] = towupper(search_string[index]);
+			search_string[index] = (wchar_t)towupper(search_string[index]);
 		}
 	}
 
