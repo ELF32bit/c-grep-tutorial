@@ -1,10 +1,10 @@
 ## 1. Parsing command-line arguments.
 <table><tr><td>
-./grep -h
-Search for PATTERN in FILE.
-Usage: grep [OPTIONS] PATTERN FILE
+./grep -h<br>
+Search for PATTERN in FILE.<br>
+Usage: grep [OPTIONS] PATTERN FILE<br>
 Example: grep -i 'hello world' main.c
-<table><tr><td>
+</table></tr></td>
 
 ## 2. Basic grep implementation like it's 1990.
 * strlen(), toupper(), isalpha() are not designed to work with multibyte characters 😃️.
