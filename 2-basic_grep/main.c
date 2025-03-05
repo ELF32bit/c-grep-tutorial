@@ -108,7 +108,6 @@ int main(int argc, char **argv) {
 	options.search_string = NULL;
 	options.file_name = NULL;
 
-	/* getopt() is commonly used for input options parsing */
 	int c;
 	while ((c = getopt(argc, argv, "hiw")) != -1) {
 		switch (c) {
@@ -126,8 +125,6 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	/* 'optind' is a global variable from unistd.h */
-	/* getopt() sorts 'argv', so non-option arguments follow options */
 	if (optind + 1 < argc) {
 		options.search_string = argv[optind + 0];
 		options.file_name = argv[optind + 1];
