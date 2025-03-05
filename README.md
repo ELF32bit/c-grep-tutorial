@@ -1,6 +1,6 @@
 ## 1. Parsing command-line arguments.
 <table><tr><td>
-./grep -h<br>
+**./grep -h**<br>
 Search for PATTERN in FILE.<br>
 Usage: grep [OPTIONS] PATTERN FILE<br>
 Example: grep -i 'hello world' main.c

@@ -142,6 +142,7 @@ int main(int argc, char **argv) {
 	if (optind + 1 < argc) {
 		options.search_string = argv[optind + 0];
 		options.file_name = argv[optind + 1];
+		/* 'optind' + 2, 3, .. for more arguments */
 	} else {
 		printf("Error: Bad arguments.\n");
 		return EXIT_FAILURE;
