@@ -28,7 +28,6 @@ Matches found: 9
 
 ## 4. Even more advanced grep implementation with multithreading.
 * Run the program multiple times and observe different output order.
-* Mixed style of C headers is introduced to split big source files.
 * Threads receive jobs from a special thread-safe queue.
 * Multiple files can now be provided as input.
 <table><tr><td>
