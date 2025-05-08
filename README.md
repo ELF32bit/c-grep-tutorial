@@ -1,4 +1,4 @@
-# Basic GREP tool in C language (for Linux)
+# GREP example in C language (for Linux)
 
 ## 1. Parsing command-line arguments.
 * **./grep -h**
