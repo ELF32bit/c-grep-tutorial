@@ -11,6 +11,8 @@
 #define ANSI_COLOR_RESET "\x1b[0m"
 
 #include <stddef.h> // size_t
+#include <stdlib.h> // calloc(), mbstowcs(), free()
+#include <string.h> // strlen()
 
 typedef int bool;
 
@@ -18,7 +20,8 @@ typedef int bool;
 typedef struct GrepOptions {
 	bool ignore_case;
 	bool match_whole_words;
-	char* search_string;
+	char* input_search_string;
+	wchar_t* search_string;
 } GrepOptions;
 
 /* Use typedef for structs to improve readability */
@@ -32,6 +35,17 @@ typedef struct GrepFileResult {
 	size_t match_count;
 	int exit_code;
 } GrepFileResult;
+
+wchar_t* convert_string(const char* string) {
+	size_t string_size = strlen(string) + 1;
+	wchar_t* wide_character_string = calloc(string_size, sizeof(wchar_t));
+	if (wide_character_string == NULL) { return NULL; }
+	if (mbstowcs(wide_character_string, string, string_size) == (size_t)-1) {
+		free(wide_character_string);
+		return NULL;
+	}
+	return wide_character_string;
+}
 
 /* Always prefix functions with header name */
 GrepStringResult grep_string(const char* string, const GrepOptions* options);

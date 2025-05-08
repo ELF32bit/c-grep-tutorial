@@ -27,8 +27,11 @@ int grep(const struct Options* options) {
 		return EXIT_FAILURE;
 	}
 
-	/* Allocating a string of the same length as the search string */
+	/* Ignoring empty search strings */
 	size_t search_string_length = strlen(options->search_string);
+	if (search_string_length == 0) { return EXIT_SUCCESS; }
+
+	/* Allocating a string of the same length as the search string */
 	char* matching_substring = strdup(options->search_string);
 	if (matching_substring == NULL) { return EXIT_FAILURE; }
 	size_t match_index = 0;
@@ -49,12 +52,8 @@ int grep(const struct Options* options) {
 
 	/* Variables required for detecting alphabetic whole word matches */
 	bool is_before_alpha = 0;
-	bool is_prefix_alpha = 0;
-	bool is_suffix_alpha = 0;
-	if (search_string_length > 0) {
-		is_prefix_alpha = isalpha(search_string[0]);
-		is_suffix_alpha = isalpha(search_string[search_string_length - 1]);
-	}
+	bool is_prefix_alpha = isalpha(search_string[0]);
+	bool is_suffix_alpha = isalpha(search_string[search_string_length - 1]);
 
 	/* Consuming file character by character until 'EOF' */
 	int c;

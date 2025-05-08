@@ -2,7 +2,6 @@
 
 #include <pthread.h>
 #include "job_queue.h"
-#include <stdlib.h> // malloc(), free()
 #include <stdio.h> // printf()
 
 /* This file implements grep_files() for grep.h */

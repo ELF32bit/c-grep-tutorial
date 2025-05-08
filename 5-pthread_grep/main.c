@@ -9,6 +9,7 @@ int main(int argc, char **argv) {
 	struct GrepOptions options;
 	options.ignore_case = 0;
 	options.match_whole_words = 0;
+	options.input_search_string = NULL;
 	options.search_string = NULL;
 	options.available_threads = 1;
 
@@ -40,7 +41,7 @@ int main(int argc, char **argv) {
 	char** file_names = NULL;
 	int file_names_length = 0;
 	if (optind + 1 < argc) {
-		options.search_string = argv[optind + 0];
+		options.input_search_string = argv[optind + 0];
 
 		/* Extracting multiple input files into an array */
 		file_names_length = argc - (optind + 1);
@@ -53,9 +54,16 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 
+	options.search_string = convert_string(options.input_search_string);
+	if (options.search_string == NULL) {
+		printf("Error: Failed converting search string.");
+		return EXIT_FAILURE;
+	}
+
 	GrepFilesResult grep_files_result = grep_files(file_names, file_names_length, &options);
 	printf("Matches found: %zu\n", grep_files_result.match_count);
-
+	free(options.search_string);
 	free(file_names); // freeing input files array
+
 	return grep_files_result.exit_code;
 }

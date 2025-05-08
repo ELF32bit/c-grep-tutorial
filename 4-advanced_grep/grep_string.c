@@ -1,7 +1,5 @@
 #include "grep.h"
 
-#include <stdlib.h> // EXIT_SUCCESS, EXIT_FAILURE, calloc(), mbstowcs(), free()
-#include <string.h> // strlen(), strdup()
 #include <wchar.h> // wcslen(), wcsdup()
 #include <wctype.h> // towupper(), iswalpha()
 #include <stdio.h> // asprintf()
@@ -14,18 +12,6 @@
 	free(previous_string);\
 }
 
-/* Use 'static' to declare local functions not present in header files */
-static wchar_t* convert_string(const char* string) {
-	size_t string_size = strlen(string) + 1;
-	wchar_t* wide_character_string = calloc(string_size, sizeof(wchar_t));
-	if (wide_character_string == NULL) { return NULL; }
-	if (mbstowcs(wide_character_string, string, string_size) == (size_t)-1) {
-		free(wide_character_string);
-		return NULL;
-	}
-	return wide_character_string;
-}
-
 GrepStringResult grep_string(const char* string, const GrepOptions* options) {
 	/* This time also returning how many matches occured */
 	GrepStringResult grep_string_result;
@@ -33,49 +19,51 @@ GrepStringResult grep_string(const char* string, const GrepOptions* options) {
 	grep_string_result.match_count = 0;
 	grep_string_result.exit_code = EXIT_SUCCESS;
 
-	/* Converting search string to wide character string */
-	wchar_t* search_string = convert_string(options->search_string);
-	if (search_string == NULL) {
-		grep_string_result.exit_code = EXIT_FAILURE;
+	size_t search_string_length = wcslen(options->search_string);
+	if (search_string_length == 0) {
+		grep_string_result.exit_code = EXIT_SUCCESS;
 		return grep_string_result;
 	}
+
 	/* Converting source string to wide character string */
 	wchar_t* source_string = convert_string(string);
 	if (source_string == NULL) {
-		free(search_string);
 		grep_string_result.exit_code = EXIT_FAILURE;
 		return grep_string_result;
 	}
 
-	size_t search_string_length = wcslen(search_string);
-	wchar_t* matching_substring = wcsdup(search_string);
+	wchar_t* matching_substring = wcsdup(options->search_string);
 	if (matching_substring == NULL) {
-		free(source_string); free(search_string);
+		free(source_string);
 		grep_string_result.exit_code = EXIT_FAILURE; // setting error code
 		return grep_string_result;
 	}
 	size_t match_index = 0;
 
+	wchar_t* search_string = options->search_string;
 	if (options->ignore_case) {
+		search_string = wcsdup(options->search_string);
+		if (search_string == NULL) {
+			free(matching_substring); free(source_string);
+			grep_string_result.exit_code = EXIT_FAILURE;
+			return grep_string_result;
+		}
 		for (size_t index = 0; index < search_string_length; index++) {
-			search_string[index] = towupper(search_string[index]);
+			search_string[index] = (wchar_t)towupper(search_string[index]);
 		}
 	}
 
 	bool is_before_alpha = 0;
-	bool is_prefix_alpha = 0;
-	bool is_suffix_alpha = 0;
-	if (search_string_length > 0) {
-		is_prefix_alpha = iswalpha(search_string[0]);
-		is_suffix_alpha = iswalpha(search_string[search_string_length - 1]);
-	}
+	bool is_prefix_alpha = iswalpha(search_string[0]);;
+	bool is_suffix_alpha = iswalpha(search_string[search_string_length - 1]);
 
 	/* C strings usually end with '\0' terminator */
 	/* Consuming string character by character until '\0' terminator */
 	bool is_colored_string = 0;
 	char* colored_string = strdup(""); // so free() works
 	if (colored_string == NULL) {
-		free(source_string); free(search_string);
+		if (options->ignore_case) { free(search_string); }
+		free(matching_substring); free(source_string);
 		grep_string_result.exit_code = EXIT_FAILURE; // setting error code
 		return grep_string_result;
 	}
@@ -126,9 +114,9 @@ GrepStringResult grep_string(const char* string, const GrepOptions* options) {
 		colored_string = NULL;
 	}
 
+	if (options->ignore_case) { free(search_string); }
 	free(matching_substring);
 	free(source_string);
-	free(search_string);
 
 	/* Preparing to return grep string result */
 	grep_string_result.colored_string = colored_string;

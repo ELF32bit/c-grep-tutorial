@@ -18,7 +18,8 @@ typedef int bool;
 struct Options {
 	bool ignore_case;
 	bool match_whole_words;
-	char* search_string;
+	char* input_search_string;
+	wchar_t* search_string;
 	char* file_name;
 };
 
@@ -41,34 +42,28 @@ int grep(const struct Options* options) {
 		return EXIT_FAILURE;
 	}
 
-	/* Converting search string to wide character string */
-	wchar_t* search_string = convert_string(options->search_string);
-	if (search_string == NULL) {
-		printf("Error: Failed converting search string.");
-		return EXIT_FAILURE;
-	}
+	size_t search_string_length = wcslen(options->search_string);
+	if (search_string_length == 0) { return EXIT_SUCCESS; }
 
-	size_t search_string_length = wcslen(search_string);
-	wchar_t* matching_substring = wcsdup(search_string);
-	if (matching_substring == NULL) {
-		free(search_string);
-		return EXIT_FAILURE;
-	}
+	wchar_t* matching_substring = wcsdup(options->search_string);
+	if (matching_substring == NULL) { return EXIT_FAILURE; }
 	size_t match_index = 0;
 
+	wchar_t* search_string = options->search_string;
 	if (options->ignore_case) {
+		search_string = wcsdup(options->search_string);
+		if (search_string == NULL) {
+			free(matching_substring);
+			return EXIT_FAILURE;
+		}
 		for (size_t index = 0; index < search_string_length; index++) {
 			search_string[index] = (wchar_t)towupper(search_string[index]);
 		}
 	}
 
 	bool is_before_alpha = 0;
-	bool is_prefix_alpha = 0;
-	bool is_suffix_alpha = 0;
-	if (search_string_length > 0) {
-		is_prefix_alpha = iswalpha(search_string[0]);
-		is_suffix_alpha = iswalpha(search_string[search_string_length - 1]);
-	}
+	bool is_prefix_alpha = iswalpha(search_string[0]);
+	bool is_suffix_alpha = iswalpha(search_string[search_string_length - 1]);
 
 	/* Consuming file character by character until 'WEOF' */
 	wint_t c;
@@ -104,7 +99,7 @@ int grep(const struct Options* options) {
 		}
 	} while (c != WEOF);
 
-	free(search_string);
+	if (options->ignore_case) { free(search_string); }
 	free(matching_substring);
 	fclose(file);
 
@@ -115,6 +110,7 @@ int main(int argc, char **argv) {
 	struct Options options;
 	options.ignore_case = 0;
 	options.match_whole_words = 0;
+	options.input_search_string = NULL;
 	options.search_string = NULL;
 	options.file_name = NULL;
 
@@ -140,7 +136,7 @@ int main(int argc, char **argv) {
 	}
 
 	if (optind + 1 < argc) {
-		options.search_string = argv[optind + 0];
+		options.input_search_string = argv[optind + 0];
 		options.file_name = argv[optind + 1];
 		/* 'optind' + 2, 3, .. for more arguments */
 	} else {
@@ -148,5 +144,16 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 
-	return grep(&options);
+	/* Converting input search string to wide character string */
+	options.search_string = convert_string(options.input_search_string);
+	if (options.search_string == NULL) {
+		printf("Error: Failed converting search string.");
+		return EXIT_FAILURE;
+	}
+
+	/* This time it's necessary to hold grep result before returning */
+	int grep_result = grep(&options);
+	free(options.search_string);
+
+	return grep_result;
 }

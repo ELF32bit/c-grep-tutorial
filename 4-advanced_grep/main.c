@@ -9,6 +9,7 @@ int main(int argc, char **argv) {
 	struct GrepOptions options;
 	options.ignore_case = 0;
 	options.match_whole_words = 0;
+	options.input_search_string = NULL;
 	options.search_string = NULL;
 
 	setlocale(LC_ALL, "C.UTF8");
@@ -32,15 +33,22 @@ int main(int argc, char **argv) {
 
 	char* file_name = NULL;
 	if (optind + 1 < argc) {
-		options.search_string = argv[optind + 0];
+		options.input_search_string = argv[optind + 0];
 		file_name = argv[optind + 1];
 	} else {
 		printf("Error: Bad arguments.\n");
 		return EXIT_FAILURE;
 	}
 
+	options.search_string = convert_string(options.input_search_string);
+	if (options.search_string == NULL) {
+		printf("Error: Failed converting search string.");
+		return EXIT_FAILURE;
+	}
+
 	GrepFileResult grep_file_result = grep_file(file_name, &options);
 	printf("Matches found: %zu\n", grep_file_result.match_count);
+	free(options.search_string);
 
 	return grep_file_result.exit_code;
 }

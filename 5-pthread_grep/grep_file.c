@@ -1,6 +1,5 @@
 #include "grep.h"
 
-#include <stdlib.h> // EXIT_SUCCESS, EXIT_FAILURE, free()
 #include <stdio.h> // fopen(), getline(), printf(), fclose()
 
 /* Initializing global variable declared in grep.h */
