@@ -24,7 +24,6 @@ extern bool grep_file_quiet_G;
 typedef struct GrepOptions {
 	bool ignore_case;
 	bool match_whole_words;
-	char* input_search_string;
 	wchar_t* search_string;
 	int available_threads;
 } GrepOptions;
