@@ -4,6 +4,17 @@
 #include <wctype.h> // towupper(), iswalpha()
 #include <stdio.h> // asprintf()
 
+wchar_t* convert_string(const char* string) {
+	size_t string_size = strlen(string) + 1;
+	wchar_t* wide_character_string = calloc(string_size, sizeof(wchar_t));
+	if (wide_character_string == NULL) { return NULL; }
+	if (mbstowcs(wide_character_string, string, string_size) == (size_t)-1) {
+		free(wide_character_string);
+		return NULL;
+	}
+	return wide_character_string;
+}
+
 /* asprintf() macro for repeated usage without memory leaks */
 /* First use of this macro requires a heap allocated string */
 #define ASPRINTF(destination_string,  ...) {\

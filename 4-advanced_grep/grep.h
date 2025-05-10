@@ -35,16 +35,7 @@ typedef struct GrepFileResult {
 	int exit_code;
 } GrepFileResult;
 
-wchar_t* convert_string(const char* string) {
-	size_t string_size = strlen(string) + 1;
-	wchar_t* wide_character_string = calloc(string_size, sizeof(wchar_t));
-	if (wide_character_string == NULL) { return NULL; }
-	if (mbstowcs(wide_character_string, string, string_size) == (size_t)-1) {
-		free(wide_character_string);
-		return NULL;
-	}
-	return wide_character_string;
-}
+wchar_t* convert_string(const char* string);
 
 /* Always prefix functions with header name */
 GrepStringResult grep_string(const char* string, const GrepOptions* options);
