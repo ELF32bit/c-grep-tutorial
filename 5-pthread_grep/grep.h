@@ -11,8 +11,6 @@
 #define ANSI_COLOR_RESET "\x1b[0m"
 
 #include <stddef.h> // size_t
-#include <stdlib.h> // calloc(), mbstowcs(), free()
-#include <string.h> // strlen()
 
 typedef int bool;
 

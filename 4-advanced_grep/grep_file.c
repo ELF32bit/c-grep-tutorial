@@ -1,5 +1,6 @@
 #include "grep.h"
 
+#include <stdlib.h> // EXIT_SUCCESS, EXIT_FAILURE
 #include <stdio.h> // fopen(), getline(), printf(), fclose()
 
 GrepFileResult grep_file(const char* file_name, const GrepOptions* options) {

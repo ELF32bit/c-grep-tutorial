@@ -1,5 +1,8 @@
 #include "grep.h"
 
+#include <stdlib.h> // calloc(), mbstowcs(), free()
+#include <string.h> // strlen()
+
 #include <wchar.h> // wcslen(), wcsdup()
 #include <wctype.h> // towupper(), iswalpha()
 #include <stdio.h> // asprintf()

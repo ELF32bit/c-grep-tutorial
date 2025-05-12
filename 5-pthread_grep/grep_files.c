@@ -1,5 +1,6 @@
 #include "grep.h"
 
+#include <stdlib.h>
 #include <pthread.h>
 #include "job_queue.h"
 #include <stdio.h> // printf()
