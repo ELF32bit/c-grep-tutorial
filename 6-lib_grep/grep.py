@@ -15,7 +15,7 @@ libgrep.grep.restype = ctypes.c_int
 
 options = GrepOptions(1, 1,
 	ctypes.c_wchar_p("את"),
-	ctypes.c_char_p("../examples/3-wchar_grep.txt".encode('utf-8'))
+	ctypes.c_char_p("../examples/3-wchar_grep.txt".encode('utf-8')),
 )
 
 print("Exit code:", libgrep.grep(ctypes.byref(options)))
