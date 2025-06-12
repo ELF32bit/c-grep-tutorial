@@ -41,11 +41,11 @@ Matches found: 9
 * Threads receive jobs from a special thread-safe queue.
 * Multiple files can now be provided as input.
 <table><tr><td>
-[3] ../examples/3-leviticus.txt: 2435<br>
-[2] ../examples/3-exodus.txt: 3113<br>
-[4] ../examples/3-numbers.txt: 3500<br>
-[5] ../examples/3-deuteronomy.txt: 2166<br>
-[1] ../examples/3-genesis.txt: 2458<br>
+[3] ../examples/5-leviticus.txt: 2435<br>
+[2] ../examples/5-exodus.txt: 3113<br>
+[4] ../examples/5-numbers.txt: 3500<br>
+[5] ../examples/5-deuteronomy.txt: 2166<br>
+[1] ../examples/5-genesis.txt: 2458<br>
 Matches found: 13672
 </table></tr></td>
 
