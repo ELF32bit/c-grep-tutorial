@@ -51,3 +51,8 @@ Matches found: 13672
 
 ## 6. Shared library
 * Running C code from Python
+<table><tr><td>
+בראשית ברא אלהים <ins>את</ins>👋️ השמים ואת👋️ הארץ<br>
+<ins>את</ins>👋️ואת👋️ואת👋️<ins>את</ins>👋️<ins>את</ins>👋️👋️ואת<br>
+Exit code: 0
+</table></tr></td>
